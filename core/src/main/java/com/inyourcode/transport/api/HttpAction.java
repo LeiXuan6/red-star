@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 The Jupiter Project
+ * Copyright (c) 2020 The red-star Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.inyourcode.transport.api;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- *
- * jupiter
- * org.jupiter.transport
- *
- * @author jiachun.fjc
  * @author JackLei
  */
-public interface Transporter {
-
-    /**
-     * Returns the transport protocol
-     */
-    Protocol protocol();
-
-    /**
-     * 传输层协议, 支持 TCP 和 UDT.
-     */
-    enum Protocol {
-        TCP,
-        UDT,
-        WEBSOCKET,
-        HTTP
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface HttpAction{
+    String action();
 }

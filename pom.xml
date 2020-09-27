@@ -174,4 +174,18 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Popocloud Release Repository</name>
+            <url>http://129.211.57.176:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Popocloud Snapshot Repository</name>
+            <url>http://129.211.57.176:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

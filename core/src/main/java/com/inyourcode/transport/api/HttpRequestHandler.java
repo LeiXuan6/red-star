@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 The Jupiter Project
+ * Copyright (c) 2020 The red-star Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.inyourcode.transport.api;
 
+import com.inyourcode.common.util.AjaxResult;
+import io.netty.handler.codec.http.HttpMethod;
+
+import java.util.Map;
+
 /**
- *
- * jupiter
- * org.jupiter.transport
- *
- * @author jiachun.fjc
  * @author JackLei
  */
-public interface Transporter {
+public interface HttpRequestHandler {
 
-    /**
-     * Returns the transport protocol
-     */
-    Protocol protocol();
+    AjaxResult handle(String action, HttpMethod httpMethod, Map<String, String> param);
 
-    /**
-     * 传输层协议, 支持 TCP 和 UDT.
-     */
-    enum Protocol {
-        TCP,
-        UDT,
-        WEBSOCKET,
-        HTTP
+    default boolean intercept(String uri){
+        if (uri.contains("/favicon.ico")) {
+            return false;
+        }
+        return true;
     }
 }
