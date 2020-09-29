@@ -20,7 +20,6 @@ import com.inyourcode.common.util.Preconditions;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -29,6 +28,7 @@ import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 import org.springframework.util.StringUtils;
@@ -41,7 +41,6 @@ import java.nio.charset.Charset;
 @Configurable
 @Configuration
 @PropertySource("classpath:redis.properties")
-@ComponentScan(basePackages = "${app.scanpackages}")
 public class RedisConfig {
     private  static final Charset UTF8 = Charset.forName("utf-8");
     @Value("${redis.factory.type}")
@@ -56,23 +55,30 @@ public class RedisConfig {
     private String dataBaseName;
     @Value("${redis.standalone.host}")
     private String standaloneHost;
+    public static final String BYTES_REDIS_TEMPLATE = "bytes-redis-template";
+    public static final String STRING_REDIS_TEMPLATE = "string-redis-template";
 
     @Bean
     public RedisConnectionFactory jedisConnectionFactory() {
         return buildRedisFactory(factoryType);
     }
 
-    @Bean
-    public RedisTemplate redisTemplate(RedisConnectionFactory jedisConnectionFactory) {
-        RedisTemplate redisTemplate = new RedisTemplate();
+    @Bean(BYTES_REDIS_TEMPLATE)
+    public RedisTemplate<String, byte[]> redisTemplate(RedisConnectionFactory jedisConnectionFactory) {
+        RedisTemplate<String, byte[]> redisTemplate = new RedisTemplate();
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
         redisTemplate.setKeySerializer(new RedisKeySerializer(dataBaseName + ":"));
         redisTemplate.setValueSerializer(new RedisByteSerializer());
         redisTemplate.setHashKeySerializer(new RedisKeySerializer(""));
         redisTemplate.setHashValueSerializer(new RedisByteSerializer());
-        redisTemplate.afterPropertiesSet();
         return redisTemplate;
+    }
 
+    @Bean(STRING_REDIS_TEMPLATE)
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory jedisConnectionFactory){
+        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(jedisConnectionFactory);
+        return stringRedisTemplate;
     }
 
     class RedisByteSerializer implements RedisSerializer {

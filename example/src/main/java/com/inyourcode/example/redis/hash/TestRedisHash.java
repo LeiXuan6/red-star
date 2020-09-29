@@ -30,7 +30,7 @@ public class TestRedisHash {
         applicationContext.register(RedisConfig.class);
         applicationContext.refresh();
 
-        long playerId = 1002;
+        long playerId = 1003;
         PlayerCollection playerCollection = new PlayerCollection(playerId);
 
         ItemDocument itemDocument = new ItemDocument();
