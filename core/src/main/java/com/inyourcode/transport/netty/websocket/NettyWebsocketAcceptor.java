@@ -24,6 +24,9 @@ import com.inyourcode.transport.netty.NettyAcceptor;
 import com.inyourcode.transport.netty.NettyConfig;
 import com.inyourcode.transport.netty.NettyTcpAcceptor;
 import com.inyourcode.transport.netty.TcpChannelProvider;
+import com.inyourcode.transport.netty.handler.acceptor.AcceptorHandler;
+import com.inyourcode.transport.session.BasicSessionFactory;
+import com.inyourcode.transport.session.BasicSessionProcessor;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -45,6 +48,7 @@ public class NettyWebsocketAcceptor extends NettyAcceptor {
     private static final Logger logger = LoggerFactory.getLogger(NettyTcpAcceptor.class);
     private final boolean nativeEt; // Use native epoll ET
     private final NettyConfig.NettyTcpConfigGroup configGroup = new NettyConfig.NettyTcpConfigGroup();
+    private AcceptorHandler acceptorHandler = new AcceptorHandler();
 
     public NettyWebsocketAcceptor(int port) {
         super(Protocol.HTTP, new InetSocketAddress(port));
@@ -64,6 +68,9 @@ public class NettyWebsocketAcceptor extends NettyAcceptor {
         // child options
         JConfig child = configGroup().child();
         child.setOption(JOption.SO_REUSEADDR, true);
+
+        BasicSessionFactory basicSessionFactory = new BasicSessionFactory();
+        acceptorHandler.processor(new BasicSessionProcessor(basicSessionFactory));
     }
 
     @Override
@@ -76,7 +83,7 @@ public class NettyWebsocketAcceptor extends NettyAcceptor {
             boot.channelFactory(TcpChannelProvider.NIO_ACCEPTOR);
         }
 
-        WebSocketServerInitializer channelInitializer = new WebSocketServerInitializer(null);
+        WebSocketServerInitializer channelInitializer = new WebSocketServerInitializer(null, acceptorHandler);
         boot.childHandler(channelInitializer);
         setOptions();
         return boot.bind(localAddress);

@@ -49,7 +49,7 @@ public class BasicSessionProcessor implements ProviderProcessor {
             logger.error("The serializer could not be found when type = {}", s_code);
             return;
         }
-        HandlerScanner.ProcesserWrapper processerWapper = HandlerScanner.getProcesserWapper(invokeId);
+        SessionHandlerScanner.ProcesserWrapper processerWapper = SessionHandlerScanner.getProcesserWapper(invokeId);
         if (processerWapper == null) {
             logger.error("The ProcesserWrapper could not be found when invokeId = {}", invokeId);
             return;
@@ -76,7 +76,7 @@ public class BasicSessionProcessor implements ProviderProcessor {
         sessionFactory.remove(ctx.channel());
     }
 
-    protected void invoke(HandlerScanner.ProcesserWrapper processerWrapper, Object message, Session session) {
+    protected void invoke(SessionHandlerScanner.ProcesserWrapper processerWrapper, Object message, Session session) {
         try {
 
             if (processerWrapper.isNoAuthReq()) {
@@ -98,16 +98,16 @@ public class BasicSessionProcessor implements ProviderProcessor {
 
             processerWrapper.invoke(session, message);
         } catch (Exception ex) {
-            logger.error("Network reqeust processing failed.", ex);
+            logger.error("Network reqeust processing failed.", StackTraceUtil.stackTrace(ex));
         }
     }
 
     class Message implements Runnable {
-        private HandlerScanner.ProcesserWrapper processerWrapper;
+        private SessionHandlerScanner.ProcesserWrapper processerWrapper;
         private Object message;
         private Session session;
 
-        public Message(HandlerScanner.ProcesserWrapper processerWrapper, Object message, Session session) {
+        public Message(SessionHandlerScanner.ProcesserWrapper processerWrapper, Object message, Session session) {
             this.processerWrapper = processerWrapper;
             this.message = message;
             this.session = session;
@@ -118,9 +118,9 @@ public class BasicSessionProcessor implements ProviderProcessor {
             try {
                 processerWrapper.invoke(session, message);
             } catch (InvocationTargetException e) {
-                logger.error("消息处理失败", e);
+                logger.error("消息处理失败", StackTraceUtil.stackTrace(e));
             } catch (IllegalAccessException e) {
-                logger.error("消息处理失败", e);
+                logger.error("消息处理失败", StackTraceUtil.stackTrace(e));
             }
         }
     }

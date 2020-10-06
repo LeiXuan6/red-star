@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 The Jupiter Project
+ * Copyright (c) 2020 The red-star Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.inyourcode.example.transport.websocket;
 
-package com.inyourcode.example.transport;
+import com.inyourcode.transport.session.api.RequestMapping;
+import com.inyourcode.transport.session.api.Session;
+import org.springframework.stereotype.Controller;
 
 /**
- * jupiter
- * org.jupiter.example
- *
- * @author jiachun.fjc
+ * @author JackLei
  */
-public class BaseService {
+@Controller
+public class C2LLoginHandler {
 
-    private Integer intValue;
-
-    public Integer getIntValue() {
-        return intValue;
-    }
-
-    public void setIntValue(Integer intValue) {
-        this.intValue = intValue;
+    @RequestMapping(invokeId = 1000, builder = C2LLogin.class)
+    public L2CLogin login(Session session, C2LLogin msg){
+        System.out.println("handle login logic.");
+        System.out.println("recive message from client : "+ msg);
+        return null;
     }
 }

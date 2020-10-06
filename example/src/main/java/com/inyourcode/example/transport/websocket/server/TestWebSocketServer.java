@@ -15,7 +15,9 @@
  */
 package com.inyourcode.example.transport.websocket.server;
 
+import com.inyourcode.example.transport.websocket.C2LLoginHandler;
 import com.inyourcode.transport.netty.websocket.NettyWebsocketAcceptor;
+import com.inyourcode.transport.session.SessionHandlerScanner;
 
 /**
  * @author JackLei
@@ -23,6 +25,7 @@ import com.inyourcode.transport.netty.websocket.NettyWebsocketAcceptor;
 public class TestWebSocketServer {
 
     public static void main(String[] args) throws InterruptedException {
+        SessionHandlerScanner.registerHandler(new C2LLoginHandler());
         NettyWebsocketAcceptor nettyWebsocketAcceptor = new NettyWebsocketAcceptor(8080);
         nettyWebsocketAcceptor.start();
     }

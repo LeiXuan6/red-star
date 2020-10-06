@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.inyourcode.example.transport.round;
+package com.inyourcode.example.transport.rpc;
 
-import com.inyourcode.example.transport.ServiceTest2Impl;
-import com.inyourcode.example.transport.ServiceTestImpl;
 import com.inyourcode.transport.netty.JNettyTcpAcceptor;
 import com.inyourcode.transport.rpc.DefaultServer;
 import com.inyourcode.transport.rpc.JRequest;

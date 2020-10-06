@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.example.transport.websocket;
 
-import org.msgpack.annotation.Message;
+package com.inyourcode.example.transport.rpc;
+
+
+import com.inyourcode.transport.rpc.ServiceProviderImpl;
 
 /**
- * @author JackLei
+ * jupiter
+ * org.jupiter.example
+ *
+ * @author jiachun.fjc
  */
-@Message
-public class C2P_Login {
-    public static int PROTOL_LOGIN = 1000;
-    public String token;
-    public int platId;
-    public int platType;
+@ServiceProviderImpl(version = "1.0.0.daily")
+public class ServiceTest2Impl implements ServiceTest2 {
 
     @Override
-    public String toString() {
-        return "C2P_Login{" +
-                "token='" + token + '\'' +
-                ", platId=" + platId +
-                ", platType=" + platType +
-                '}';
+    public String sayHelloString() {
+        return "Hello jupiter";
     }
 }

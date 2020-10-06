@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.inyourcode.example.transport;
+package com.inyourcode.example.transport.rpc;
 
 
 import com.inyourcode.common.util.Lists;

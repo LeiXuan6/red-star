@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.inyourcode.example.transport;
+package com.inyourcode.example.transport.rpc;
 
 
 import com.inyourcode.transport.rpc.ServiceProvider;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * jupiter
@@ -29,26 +26,7 @@ import java.util.List;
  * @author jiachun.fjc
  */
 @ServiceProvider(group = "test")
-public interface ServiceTest {
+public interface ServiceTest2 {
 
-    ResultClass sayHello(String... s);
-
-    class ResultClass implements Serializable {
-        private static final long serialVersionUID = -6514302641628274984L;
-
-        String str;
-        int num;
-        Long lon;
-        List<String> list;
-
-        @Override
-        public String toString() {
-            return "ResultClass{" +
-                    "str='" + str + '\'' +
-                    ", num=" + num +
-                    ", lon=" + lon +
-                    ", list=" + list +
-                    '}';
-        }
-    }
+    String sayHelloString();
 }

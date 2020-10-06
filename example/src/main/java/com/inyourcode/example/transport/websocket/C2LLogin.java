@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 The Jupiter Project
+ * Copyright (c) 2020The red-star Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.inyourcode.example.transport.websocket;
 
-package com.inyourcode.example.transport.round;
-
-
-import com.inyourcode.transport.registry.api.RegistryServer;
+import org.msgpack.annotation.Message;
 
 /**
- * jupiter
- * org.jupiter.example.round
- *
- * @author jiachun.fjc
+ * @author JackLei
  */
-public class JupiterRegistryServer {
+@Message
+public class C2LLogin {
+    public static int PROTOL_LOGIN = 1000;
+    public String token;
+    public int platId;
+    public int platType;
 
-    public static void main(String[] args) {
-        RegistryServer registryServer = RegistryServer.Default.createRegistryServer(20001, 1);      // 注册中心
-        registryServer.startRegistryServer();
+    @Override
+    public String toString() {
+        return "C2P_Login{" +
+                "token='" + token + '\'' +
+                ", platId=" + platId +
+                ", platType=" + platType +
+                '}';
     }
 }

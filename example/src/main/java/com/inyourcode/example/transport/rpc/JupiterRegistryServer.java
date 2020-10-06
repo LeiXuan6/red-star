@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.inyourcode.example.transport;
+package com.inyourcode.example.transport.rpc;
 
 
-import com.inyourcode.transport.rpc.ServiceProviderImpl;
+import com.inyourcode.transport.registry.api.RegistryServer;
 
 /**
  * jupiter
- * org.jupiter.example
+ * org.jupiter.example.round
  *
  * @author jiachun.fjc
  */
-@ServiceProviderImpl(version = "1.0.0.daily")
-public class ServiceTest2Impl implements ServiceTest2 {
+public class JupiterRegistryServer {
 
-    @Override
-    public String sayHelloString() {
-        return "Hello jupiter";
+    public static void main(String[] args) {
+        RegistryServer registryServer = RegistryServer.Default.createRegistryServer(20001, 1);      // 注册中心
+        registryServer.startRegistryServer();
     }
 }

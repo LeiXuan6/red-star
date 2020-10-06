@@ -15,9 +15,18 @@
  */
 package com.inyourcode.example.transport.websocket.client;
 
+import com.inyourcode.example.transport.websocket.C2LLogin;
+import com.inyourcode.serialization.api.Serializer;
+import com.inyourcode.serialization.api.SerializerFactory;
+import com.inyourcode.serialization.api.SerializerType;
+import com.inyourcode.transport.api.payload.JRequestBytes;
+import com.inyourcode.transport.netty.handler.ProtocolDecoder;
+import com.inyourcode.transport.netty.websocket.codec.WSBinaryFrameDecoder;
+import com.inyourcode.transport.netty.websocket.codec.WSBinaryFrameEncoder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -27,11 +36,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
 import io.netty.handler.ssl.SslContext;
@@ -61,8 +66,8 @@ public final class WebSocketClient {
 
     public static void main(String[] args) throws Exception {
         URI uri = new URI(URL);
-        String scheme = uri.getScheme() == null? "ws" : uri.getScheme();
-        final String host = uri.getHost() == null? "127.0.0.1" : uri.getHost();
+        String scheme = uri.getScheme() == null ? "ws" : uri.getScheme();
+        final String host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
         final int port;
         if (uri.getPort() == -1) {
             if ("ws".equalsIgnoreCase(scheme)) {
@@ -85,7 +90,7 @@ public final class WebSocketClient {
         final SslContext sslCtx;
         if (ssl) {
             sslCtx = SslContextBuilder.forClient()
-                .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
         } else {
             sslCtx = null;
         }
@@ -102,21 +107,24 @@ public final class WebSocketClient {
 
             Bootstrap b = new Bootstrap();
             b.group(group)
-             .channel(NioSocketChannel.class)
-             .handler(new ChannelInitializer<SocketChannel>() {
-                 @Override
-                 protected void initChannel(SocketChannel ch) {
-                     ChannelPipeline p = ch.pipeline();
-                     if (sslCtx != null) {
-                         p.addLast(sslCtx.newHandler(ch.alloc(), host, port));
-                     }
-                     p.addLast(
-                             new HttpClientCodec(),
-                             new HttpObjectAggregator(8192),
-                             WebSocketClientCompressionHandler.INSTANCE,
-                             handler);
-                 }
-             });
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) {
+                            ChannelPipeline p = ch.pipeline();
+                            if (sslCtx != null) {
+                                p.addLast(sslCtx.newHandler(ch.alloc(), host, port));
+                            }
+                            p.addLast(
+                                    new HttpClientCodec(),
+                                    new HttpObjectAggregator(8192),
+                                    WebSocketClientCompressionHandler.INSTANCE,
+                                    new WSBinaryFrameDecoder(),
+                                    new WSBinaryFrameEncoder(),
+                                    new ProtocolDecoder(),
+                                    handler);
+                        }
+                    });
 
             Channel ch = b.connect(uri.getHost(), port).sync().channel();
             handler.handshakeFuture().sync();
@@ -126,16 +134,27 @@ public final class WebSocketClient {
                 String msg = console.readLine();
                 if (msg == null) {
                     break;
-                } else if ("bye".equals(msg.toLowerCase())) {
-                    ch.writeAndFlush(new CloseWebSocketFrame());
-                    ch.closeFuture().sync();
-                    break;
-                } else if ("ping".equals(msg.toLowerCase())) {
-                    WebSocketFrame frame = new PingWebSocketFrame(Unpooled.wrappedBuffer(new byte[] { 8, 1, 8, 1 }));
-                    ch.writeAndFlush(frame);
+                } else if ("login".equals(msg.toLowerCase())) {
+                    C2LLogin login = new C2LLogin();
+                    login.token = "SDFERWFWER";
+                    login.platId = 1;
+                    login.platType = 1;
+                    JRequestBytes jRequestPayload = new JRequestBytes(1000);
+                    Serializer serializer = SerializerFactory.getSerializer(SerializerType.MSGPACK.value());
+                    jRequestPayload.bytes(SerializerType.MSGPACK.value(), serializer.writeObject(login));
+
+                    ch.writeAndFlush(jRequestPayload).addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                            if (channelFuture.isSuccess()) {
+                                System.out.println("SUCC");
+                            } else {
+                                channelFuture.cause().printStackTrace();
+                            }
+                        }
+                    });
                 } else {
-                    WebSocketFrame frame = new TextWebSocketFrame(msg);
-                    ch.writeAndFlush(frame);
+                    //do nothing
                 }
             }
         } finally {

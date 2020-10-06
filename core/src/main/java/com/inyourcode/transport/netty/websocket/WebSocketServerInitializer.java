@@ -15,6 +15,10 @@
  */
 package com.inyourcode.transport.netty.websocket;
 
+import com.inyourcode.transport.netty.handler.ProtocolDecoder;
+import com.inyourcode.transport.netty.handler.acceptor.AcceptorHandler;
+import com.inyourcode.transport.netty.websocket.codec.WSBinaryFrameDecoder;
+import com.inyourcode.transport.netty.websocket.codec.WSBinaryFrameEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -27,13 +31,13 @@ import io.netty.handler.ssl.SslContext;
 /**
  */
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
-
     private static final String WEBSOCKET_PATH = "/websocket";
-
+    private AcceptorHandler acceptorHandler;
     private final SslContext sslCtx;
 
-    public WebSocketServerInitializer(SslContext sslCtx) {
+    public WebSocketServerInitializer(SslContext sslCtx, AcceptorHandler acceptorHandler) {
         this.sslCtx = sslCtx;
+        this.acceptorHandler = acceptorHandler;
     }
 
     @Override
@@ -46,7 +50,15 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
-        pipeline.addLast(new WebSocketIndexPageHandler(WEBSOCKET_PATH));
-        pipeline.addLast(new WebSocketFrameHandler());
+        pipeline.addLast(new WSBinaryFrameDecoder());
+        pipeline.addLast(new ProtocolDecoder());
+        pipeline.addLast(new WSBinaryFrameEncoder());
+//        pipeline.addLast(new SimpleChannelInboundHandler<JRequestBytes>() {
+//            @Override
+//            protected void channelRead0(ChannelHandlerContext ctx, JRequestBytes msg) throws Exception {
+//                System.out.println("channel Read :" + msg);
+//            }
+//        });
+        pipeline.addLast(acceptorHandler);
     }
 }

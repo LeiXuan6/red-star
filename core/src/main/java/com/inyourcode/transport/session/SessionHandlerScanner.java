@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 202 The red-star Project
+ * Copyright (c) 2020 The red-star Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,43 +36,47 @@ import java.util.Set;
  * 请求处理的映射关系
  * @author JackLei
  */
-public class HandlerScanner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HandlerScanner.class);
+public class SessionHandlerScanner {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionHandlerScanner.class);
     private static final Map<Long, ProcesserWrapper> REGISTRY_MAP = new HashMap<>();
     private static Set<Long> INVOKE_ID_SET = new HashSet<>();
 
     public static void init(ApplicationContext applicationContext) {
         Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(Controller.class);
         for (Object processerObj : beansWithAnnotation.values()) {
-            Class clazz = processerObj.getClass();
-            boolean annotationPresent = clazz.isAnnotationPresent(Controller.class);
-            if (!annotationPresent) {
+            registerHandler(processerObj);
+        }
+    }
+
+    public static void registerHandler(Object handlerObj) {
+        Class clazz = handlerObj.getClass();
+        boolean annotationPresent = clazz.isAnnotationPresent(Controller.class);
+        if (!annotationPresent) {
+            return;
+        }
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        for (Method method : declaredMethods) {
+            boolean haveHandlerAnno = method.isAnnotationPresent(RequestMapping.class);
+            if (!haveHandlerAnno) {
                 continue;
             }
-            Method[] declaredMethods = clazz.getDeclaredMethods();
-            for (Method method : declaredMethods) {
-                boolean haveHandlerAnno = method.isAnnotationPresent(RequestMapping.class);
-                if (!haveHandlerAnno) {
-                    continue;
-                }
 
-                RequestMapping handlerAnno = method.getAnnotation(RequestMapping.class);
-                long invokeId = handlerAnno.invokeId();
-                if (INVOKE_ID_SET.contains(invokeId)) {
-                    throw new RuntimeException(String.format("Invoke id is duplicate,method = %s,id = %d ", method, invokeId));
-                }
+            RequestMapping handlerAnno = method.getAnnotation(RequestMapping.class);
+            long invokeId = handlerAnno.invokeId();
+            if (INVOKE_ID_SET.contains(invokeId)) {
+                throw new RuntimeException(String.format("Invoke id is duplicate,method = %s,id = %d ", method, invokeId));
+            }
 
-                AsyncRequest asycRequest = method.getAnnotation(AsyncRequest.class);
-                FixedRequest fixedRequest = method.getAnnotation(FixedRequest.class);
-                NoAuthRequest noAuthRequest = method.getAnnotation(NoAuthRequest.class);
+            AsyncRequest asycRequest = method.getAnnotation(AsyncRequest.class);
+            FixedRequest fixedRequest = method.getAnnotation(FixedRequest.class);
+            NoAuthRequest noAuthRequest = method.getAnnotation(NoAuthRequest.class);
 
-                INVOKE_ID_SET.add(invokeId);
-                Class messageClazz = handlerAnno.builder();
-                ProcesserWrapper wapper = new ProcesserWrapper(invokeId, messageClazz, method, processerObj, asycRequest != null, fixedRequest != null, noAuthRequest == null);
-                REGISTRY_MAP.put(invokeId, wapper);
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Message handler  reigster successful ,handler = {}", wapper);
-                }
+            INVOKE_ID_SET.add(invokeId);
+            Class messageClazz = handlerAnno.builder();
+            ProcesserWrapper wapper = new ProcesserWrapper(invokeId, messageClazz, method, handlerObj, asycRequest != null, fixedRequest != null, noAuthRequest == null);
+            REGISTRY_MAP.put(invokeId, wapper);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Message handler  reigster successful ,handler = {}", wapper);
             }
         }
     }

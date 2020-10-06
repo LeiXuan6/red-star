@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package com.inyourcode.example.transport;
-
-
-import com.inyourcode.transport.rpc.ServiceProvider;
+package com.inyourcode.example.transport.rpc;
 
 /**
  * jupiter
@@ -25,8 +22,15 @@ import com.inyourcode.transport.rpc.ServiceProvider;
  *
  * @author jiachun.fjc
  */
-@ServiceProvider(group = "test")
-public interface ServiceTest2 {
+public class BaseService {
 
-    String sayHelloString();
+    private Integer intValue;
+
+    public Integer getIntValue() {
+        return intValue;
+    }
+
+    public void setIntValue(Integer intValue) {
+        this.intValue = intValue;
+    }
 }

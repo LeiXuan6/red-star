@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.inyourcode.example.transport.round;
+package com.inyourcode.example.transport.rpc;
 
 
-import com.inyourcode.example.transport.ServiceTest;
-import com.inyourcode.example.transport.ServiceTest2;
 import com.inyourcode.transport.api.JConnector;
 import com.inyourcode.transport.api.exception.ConnectFailedException;
 import com.inyourcode.transport.netty.JNettyTcpConnector;
