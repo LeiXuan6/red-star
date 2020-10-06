@@ -24,12 +24,14 @@ package com.inyourcode.serialization.api;
  * org.jupiter.serialization
  *
  * @author jiachun.fjc
+ * @author JackLei
  */
 public enum SerializerType {
     PROTO_STUFF ((byte) 0x01),
     HESSIAN     ((byte) 0x02),
     KRYO        ((byte) 0x03),
-    JAVA        ((byte) 0x04)
+    JAVA        ((byte) 0x04),
+    MSGPACK     ((byte) 0x05)
     // ...
     ;
 

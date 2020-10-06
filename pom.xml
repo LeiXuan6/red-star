@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <netty.version>4.1.9.Final</netty.version>
+        <netty.version>4.1.36.Final</netty.version>
         <jmh.version>1.9.3</jmh.version>
         <barchart.version>2.3.0</barchart.version>
         <protostuff.version>1.5.2</protostuff.version>
@@ -30,6 +30,7 @@
         <slf4j.version>1.7.5</slf4j.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
+        <msgpack.version>0.6.12</msgpack.version>
         <spring.framework.version>5.2.8.RELEASE</spring.framework.version>
     </properties>
 
@@ -58,6 +59,11 @@
             <groupId>io.protostuff</groupId>
             <artifactId>protostuff-runtime</artifactId>
             <version>${protostuff.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.msgpack</groupId>
+            <artifactId>msgpack</artifactId>
+            <version>${msgpack.version}</version>
         </dependency>
         <!-- # serialization dependency: end -->
 
