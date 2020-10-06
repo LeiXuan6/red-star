@@ -35,7 +35,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-package com.inyourcode.example.transport.websocket.test2.client;
+package com.inyourcode.example.transport.websocket.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
