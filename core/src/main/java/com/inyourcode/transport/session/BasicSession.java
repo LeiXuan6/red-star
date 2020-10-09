@@ -16,7 +16,6 @@
 package com.inyourcode.transport.session;
 import com.inyourcode.transport.session.api.Session;
 import io.netty.channel.Channel;
-import org.omg.CORBA.ByteHolder;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,14 +23,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * session 基础实现
  * @author JackLei
  */
-public class BasicSession implements Session<ByteHolder> {
+public class BasicSession implements Session<Object> {
     private long id;
     private Channel channel;
-    private ConcurrentHashMap<Object,Object> attributeMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Class,Object> attributeMap = new ConcurrentHashMap<>();
 
-    public BasicSession(long id, Channel nettyChannel) {
-        this.id = id;
+    public BasicSession(Channel nettyChannel) {
         this.channel = nettyChannel;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override
@@ -50,22 +52,22 @@ public class BasicSession implements Session<ByteHolder> {
     }
 
     @Override
-    public void setAttribute(Object key, Object val) {
+    public void setAttribute(Class key, Object val) {
         attributeMap.put(key,val);
     }
 
     @Override
-    public void removeAttribute(Object key) {
+    public void removeAttribute(Class key) {
         attributeMap.remove(key);
     }
 
     @Override
-    public void write(ByteHolder message) {
+    public void write(Object message) {
         channel.write(message);
     }
 
     @Override
-    public void writeAndFlush(ByteHolder message) {
+    public void writeAndFlush(Object message) {
         channel.writeAndFlush(message);
     }
 
@@ -75,7 +77,7 @@ public class BasicSession implements Session<ByteHolder> {
     }
 
     @Override
-    public Object getAttribute(Object key) {
+    public Object getAttribute(Class key) {
         return attributeMap.get(key);
     }
 

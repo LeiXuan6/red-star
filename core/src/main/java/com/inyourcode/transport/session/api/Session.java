@@ -33,13 +33,13 @@ public interface Session<M> {
      boolean isActive();
 
      /** 获取channel中的属性 */
-    <T> T getAttribute(Object key);
+    <T> T getAttribute(Class key);
 
     /** 设置channel属性 */
-    void setAttribute(Object key,Object val);
+    void setAttribute(Class key,Object val);
 
     /** 移除属性 */
-    void removeAttribute(Object key);
+    void removeAttribute(Class key);
 
     /** 写消息到channel */
     void write(M message);

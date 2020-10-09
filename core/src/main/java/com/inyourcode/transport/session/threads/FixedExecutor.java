@@ -12,14 +12,15 @@ import io.netty.util.concurrent.DefaultEventExecutor;
  * @author JackLei
  **/
 public class FixedExecutor {
-
+    private static volatile  boolean start = false;
     private static DefaultEventExecutor[] executors;
 
     /**
      * 启动
      */
-    public static synchronized void start(int coreSize) {
-        if (executors == null) {
+    public static void start(int coreSize) {
+        if (start) {
+            start = true;
             executors = new DefaultEventExecutor[coreSize];
             for (int i = 0; i < coreSize; i++) {
                 executors[i] = new DefaultEventExecutor(new NameThreadFactory("Fixed"));
@@ -43,6 +44,9 @@ public class FixedExecutor {
      * @param task
      */
     public static void execute(int hash, Runnable task) {
+        if (!start){
+            throw new RuntimeException("The thread pool is not open.");
+        }
         executors[(hash % executors.length) >>> 1].execute(task);
     }
 
@@ -52,6 +56,9 @@ public class FixedExecutor {
      * @param task
      */
     public static void execute(Runnable task) {
+        if (!start){
+            throw new RuntimeException("The thread pool is not open.");
+        }
         executors[0].execute(task);
     }
 }

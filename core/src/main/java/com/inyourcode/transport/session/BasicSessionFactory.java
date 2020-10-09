@@ -21,21 +21,18 @@ import com.inyourcode.transport.session.api.Session;
 import io.netty.channel.Channel;
 import io.netty.util.Attribute;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  *
  * @author JackLei
  */
 public class BasicSessionFactory implements ISessionFactory {
-    AtomicLong id = new AtomicLong();
 
     @Override
     public Session create(Channel channel) {
         Attribute<Session> attr = channel.attr(ATTRIBUTE_SESSION_KEY);
         Session session = attr.get();
         if(session == null){
-            session = new BasicSession(id.incrementAndGet(),channel);
+            session = new BasicSession(channel);
             Session ifAbsent = attr.setIfAbsent(session);
             if(ifAbsent != null){
                 session = ifAbsent;

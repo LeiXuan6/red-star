@@ -80,10 +80,13 @@ public class BasicSessionProcessor implements ProviderProcessor {
         try {
 
             if (processerWrapper.isNoAuthReq()) {
-                if (!session.auth()) {
-                    logger.error("session 未验证，请求[{}]无法被处理", processerWrapper.getInvokerId());
-                    return;
-                }
+                FixedExecutor.execute(session.hashCode(), new Message(processerWrapper, message, session));
+                return;
+            }
+
+            if (!session.auth()) {
+                logger.error("session 未验证，请求[{}]无法被处理", processerWrapper.getInvokerId());
+                return;
             }
 
             if (processerWrapper.isAsyncReq()) {
@@ -96,7 +99,7 @@ public class BasicSessionProcessor implements ProviderProcessor {
                 return;
             }
 
-            processerWrapper.invoke(session, message);
+            FixedExecutor.execute(session.hashCode(), new Message(processerWrapper, message, session));
         } catch (Exception ex) {
             logger.error("Network reqeust processing failed.", StackTraceUtil.stackTrace(ex));
         }
