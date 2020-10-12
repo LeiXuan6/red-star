@@ -23,13 +23,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * session 基础实现
  * @author JackLei
  */
-public class BasicSession implements Session<Object> {
+public class BasicSession implements Session {
     private long id;
     private Channel channel;
     private ConcurrentHashMap<Class,Object> attributeMap = new ConcurrentHashMap<>();
 
-    public BasicSession(Channel nettyChannel) {
-        this.channel = nettyChannel;
+    public BasicSession() {
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public void setId(long id) {
@@ -77,8 +80,8 @@ public class BasicSession implements Session<Object> {
     }
 
     @Override
-    public Object getAttribute(Class key) {
-        return attributeMap.get(key);
+    public <T> T getAttribute(Class<T> key) {
+        return (T) attributeMap.get(key);
     }
 
     @Override

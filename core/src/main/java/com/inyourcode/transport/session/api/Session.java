@@ -22,18 +22,20 @@ import io.netty.channel.Channel;
  *
  * @author JackLei
  */
-public interface Session<M> {
+public interface Session {
      /** session的唯一id  */
      long getId();
 
      /** channel */
      Channel channel();
 
+     void setChannel(Channel channe);
+
      /** 是否可用 */
      boolean isActive();
 
      /** 获取channel中的属性 */
-    <T> T getAttribute(Class key);
+     <T> T getAttribute(Class<T> key);
 
     /** 设置channel属性 */
     void setAttribute(Class key,Object val);
@@ -42,10 +44,10 @@ public interface Session<M> {
     void removeAttribute(Class key);
 
     /** 写消息到channel */
-    void write(M message);
+    void write(Object message);
 
     /** 写消息到channel ,并刷新到缓冲区 */
-    void writeAndFlush(M message);
+    void writeAndFlush(Object message);
 
     /** 刷新缓冲区 */
     void flush();

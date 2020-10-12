@@ -53,12 +53,6 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast(new WSBinaryFrameDecoder());
         pipeline.addLast(new ProtocolDecoder());
         pipeline.addLast(new WSBinaryFrameEncoder());
-//        pipeline.addLast(new SimpleChannelInboundHandler<JRequestBytes>() {
-//            @Override
-//            protected void channelRead0(ChannelHandlerContext ctx, JRequestBytes msg) throws Exception {
-//                System.out.println("channel Read :" + msg);
-//            }
-//        });
         pipeline.addLast(acceptorHandler);
     }
 }

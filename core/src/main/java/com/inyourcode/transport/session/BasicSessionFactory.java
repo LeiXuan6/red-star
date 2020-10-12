@@ -32,7 +32,8 @@ public class BasicSessionFactory implements ISessionFactory {
         Attribute<Session> attr = channel.attr(ATTRIBUTE_SESSION_KEY);
         Session session = attr.get();
         if(session == null){
-            session = new BasicSession(channel);
+            session = new BasicSession();
+            session.setChannel(channel);
             Session ifAbsent = attr.setIfAbsent(session);
             if(ifAbsent != null){
                 session = ifAbsent;

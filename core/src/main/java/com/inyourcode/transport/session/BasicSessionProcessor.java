@@ -67,7 +67,6 @@ public class BasicSessionProcessor implements ProviderProcessor {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        NettyChannel.attachChannel(ctx.channel());
         sessionFactory.create(ctx.channel());
     }
 

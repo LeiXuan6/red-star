@@ -19,6 +19,7 @@ import com.inyourcode.common.util.JConstants;
 import com.inyourcode.transport.api.JConfig;
 import com.inyourcode.transport.api.JConfigGroup;
 import com.inyourcode.transport.api.JOption;
+import com.inyourcode.transport.api.processor.ProviderProcessor;
 import com.inyourcode.transport.netty.NativeSupport;
 import com.inyourcode.transport.netty.NettyAcceptor;
 import com.inyourcode.transport.netty.NettyConfig;
@@ -49,11 +50,17 @@ public class NettyWebsocketAcceptor extends NettyAcceptor {
     private final boolean nativeEt; // Use native epoll ET
     private final NettyConfig.NettyTcpConfigGroup configGroup = new NettyConfig.NettyTcpConfigGroup();
     private AcceptorHandler acceptorHandler = new AcceptorHandler();
+    private ProviderProcessor providerProcessor;
 
-    public NettyWebsocketAcceptor(int port) {
+    public NettyWebsocketAcceptor(int port, ProviderProcessor providerProcessor) {
         super(Protocol.HTTP, new InetSocketAddress(port));
         nativeEt = true;
+        this.providerProcessor = providerProcessor;
         init();
+    }
+
+    public NettyWebsocketAcceptor(int port){
+        this(port,new BasicSessionProcessor(new BasicSessionFactory()));
     }
 
     @Override
@@ -68,9 +75,7 @@ public class NettyWebsocketAcceptor extends NettyAcceptor {
         // child options
         JConfig child = configGroup().child();
         child.setOption(JOption.SO_REUSEADDR, true);
-
-        BasicSessionFactory basicSessionFactory = new BasicSessionFactory();
-        acceptorHandler.processor(new BasicSessionProcessor(basicSessionFactory));
+        acceptorHandler.processor(this.providerProcessor);
     }
 
     @Override
