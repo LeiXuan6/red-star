@@ -37,14 +37,13 @@ public class DefaultHttpRequestHandler implements HttpRequestHandler {
     }
 
     @Override
-    public AjaxResult handle(String action, HttpMethod httpMethod, Map<String, String> param) {
+    public Object handle(String action, HttpMethod httpMethod, Map<String, String> param) {
         HttpMetehodCaller httpMetehodCaller = callerMap.get(action);
         if (httpMetehodCaller == null) {
-            return AjaxResult.error("the action[{}] cannot found handler", action);
+            return "cannot found handler";
         }
         try {
-            Object invoke = httpMetehodCaller.invoke(param);
-            return AjaxResult.success(invoke);
+            return httpMetehodCaller.invoke(param);
         } catch (Exception e) {
             logger.error("the action[{}] handing exception", action, e);
             return AjaxResult.error("handing exception");

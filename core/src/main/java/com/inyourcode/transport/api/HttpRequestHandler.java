@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public interface HttpRequestHandler {
 
-    AjaxResult handle(String action, HttpMethod httpMethod, Map<String, String> param);
+    Object handle(String action, HttpMethod httpMethod, Map<String, String> param);
 
     default boolean intercept(String uri){
         if (uri.contains("/favicon.ico")) {

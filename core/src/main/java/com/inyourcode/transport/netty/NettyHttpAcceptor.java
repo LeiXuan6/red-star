@@ -250,10 +250,10 @@ public class NettyHttpAcceptor extends NettyAcceptor {
                 }
 
                 String action = uri.split("\\?")[0].substring(1);
-                AjaxResult ajaxResult = httpRequestHandler.handle(action, requestMethod, paramMap);
+                Object result = httpRequestHandler.handle(action, requestMethod, paramMap);
 
                 boolean keepAlive = HttpUtil.isKeepAlive(req);
-                FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(JSONObject.toJSONString(ajaxResult).getBytes(Charset.forName("UTF-8"))));
+                FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(JSONObject.toJSONString(result).getBytes(Charset.forName("UTF-8"))));
                 response.headers().set(CONTENT_TYPE, "application/json");
                 response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
 
