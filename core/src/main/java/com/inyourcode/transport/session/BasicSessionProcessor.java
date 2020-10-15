@@ -77,14 +77,14 @@ public class BasicSessionProcessor implements ProviderProcessor {
 
     protected void invoke(SessionHandlerScanner.ProcesserWrapper processerWrapper, Object message, Session session) {
         try {
-
             if (processerWrapper.isNoAuthReq()) {
                 FixedExecutor.execute(session.hashCode(), new Message(processerWrapper, message, session));
                 return;
             }
 
             if (!session.auth()) {
-                logger.error("session 未验证，请求[{}]无法被处理", processerWrapper.getInvokerId());
+                //TODO close连接
+                logger.error("session is forbid, channel = {}", session.channel());
                 return;
             }
 
@@ -100,7 +100,7 @@ public class BasicSessionProcessor implements ProviderProcessor {
 
             FixedExecutor.execute(session.hashCode(), new Message(processerWrapper, message, session));
         } catch (Exception ex) {
-            logger.error("Network reqeust processing failed.", StackTraceUtil.stackTrace(ex));
+            logger.error("network reqeust processing failed,{}", StackTraceUtil.stackTrace(ex));
         }
     }
 
@@ -120,9 +120,9 @@ public class BasicSessionProcessor implements ProviderProcessor {
             try {
                 processerWrapper.invoke(session, message);
             } catch (InvocationTargetException e) {
-                logger.error("消息处理失败", StackTraceUtil.stackTrace(e));
+                logger.error("session messge invoke failed, {}", StackTraceUtil.stackTrace(e));
             } catch (IllegalAccessException e) {
-                logger.error("消息处理失败", StackTraceUtil.stackTrace(e));
+                logger.error("session messge invoke failed, {}", StackTraceUtil.stackTrace(e));
             }
         }
     }

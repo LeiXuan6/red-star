@@ -19,7 +19,7 @@ public class FixedExecutor {
      * 启动
      */
     public static void start(int coreSize) {
-        if (start) {
+        if (!start) {
             start = true;
             executors = new DefaultEventExecutor[coreSize];
             for (int i = 0; i < coreSize; i++) {
