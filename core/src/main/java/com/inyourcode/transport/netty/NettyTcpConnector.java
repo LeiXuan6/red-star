@@ -41,7 +41,7 @@ public abstract class NettyTcpConnector extends NettyConnector {
 
     public NettyTcpConnector() {
         super(Protocol.TCP);
-        nativeEt = true;
+        nativeEt = false;
         init();
     }
 
@@ -53,7 +53,7 @@ public abstract class NettyTcpConnector extends NettyConnector {
 
     public NettyTcpConnector(int nWorkers) {
         super(Protocol.TCP, nWorkers);
-        nativeEt = true;
+        nativeEt = false;
         init();
     }
 

@@ -43,9 +43,9 @@ public class BasicSessionFactory implements ISessionFactory {
     }
 
     @Override
-    public void remove(Channel channel) {
+    public Session remove(Channel channel) {
         Attribute<Session> attr = channel.attr(ATTRIBUTE_SESSION_KEY);
-        attr.set(null);
+        return attr.get();
     }
 
     @Override

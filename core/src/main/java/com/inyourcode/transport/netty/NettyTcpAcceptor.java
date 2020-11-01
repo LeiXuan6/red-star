@@ -47,25 +47,25 @@ public abstract class NettyTcpAcceptor extends NettyAcceptor {
 
     public NettyTcpAcceptor(int port) {
         super(Protocol.TCP, new InetSocketAddress(port));
-        nativeEt = true;
+        nativeEt = false;
         init();
     }
 
     public NettyTcpAcceptor(SocketAddress localAddress) {
         super(Protocol.TCP, localAddress);
-        nativeEt = true;
+        nativeEt = false;
         init();
     }
 
     public NettyTcpAcceptor(int port, int nWorks) {
         super(Protocol.TCP, new InetSocketAddress(port), nWorks);
-        nativeEt = true;
+        nativeEt = false;
         init();
     }
 
     public NettyTcpAcceptor(SocketAddress localAddress, int nWorks) {
         super(Protocol.TCP, localAddress, nWorks);
-        nativeEt = true;
+        nativeEt = false;
         init();
     }
 

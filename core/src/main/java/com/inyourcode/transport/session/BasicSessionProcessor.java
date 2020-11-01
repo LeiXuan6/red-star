@@ -67,12 +67,14 @@ public class BasicSessionProcessor implements ProviderProcessor {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        sessionFactory.create(ctx.channel());
+        Session session = sessionFactory.create(ctx.channel());
+        SessionListenerService.listenOpen(session);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        sessionFactory.remove(ctx.channel());
+        Session remove = sessionFactory.remove(ctx.channel());
+        SessionListenerService.listenClose(remove);
     }
 
     protected void invoke(SessionHandlerScanner.ProcesserWrapper processerWrapper, Object message, Session session) {

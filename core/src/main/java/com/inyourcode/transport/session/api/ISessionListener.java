@@ -15,20 +15,14 @@
  */
 package com.inyourcode.transport.session.api;
 
-import com.inyourcode.transport.netty.channel.NettyChannel;
-import io.netty.channel.Channel;
-import io.netty.util.AttributeKey;
+import org.springframework.stereotype.Component;
 
 /**
- *
  * @author JackLei
  */
-public interface ISessionFactory {
-    AttributeKey<Session> ATTRIBUTE_SESSION_KEY = AttributeKey.valueOf("netty-channel-session");
+@Component
+public interface ISessionListener {
+    void onOpen(Session session);
 
-    Session create(Channel channel);
-
-    Session remove(Channel nettyChannel);
-
-    Session get(NettyChannel channel);
+    void onClose(Session session);
 }
