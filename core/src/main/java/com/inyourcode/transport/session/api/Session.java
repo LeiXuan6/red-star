@@ -46,9 +46,6 @@ public interface Session {
     /** 写消息到channel */
     void write(Object message);
 
-    /** 写消息到channel ,并刷新到缓冲区 */
-    void writeAndFlush(Object message);
-
     /** 刷新缓冲区 */
     void flush();
 

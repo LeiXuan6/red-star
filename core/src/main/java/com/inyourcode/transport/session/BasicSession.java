@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 package com.inyourcode.transport.session;
+import com.inyourcode.serialization.api.Serializer;
+import com.inyourcode.serialization.api.SerializerFactory;
+import com.inyourcode.serialization.api.SerializerType;
+import com.inyourcode.transport.api.Status;
+import com.inyourcode.transport.api.payload.JResponseBytes;
+import com.inyourcode.transport.session.api.Packet;
 import com.inyourcode.transport.session.api.Session;
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author JackLei
  */
 public class BasicSession implements Session {
+    private static final Logger logger = LoggerFactory.getLogger(BasicSession.class);
     private long id;
     private Channel channel;
     private ConcurrentHashMap<Class,Object> attributeMap = new ConcurrentHashMap<>();
@@ -66,12 +76,29 @@ public class BasicSession implements Session {
 
     @Override
     public void write(Object message) {
-        channel.write(message);
+        JResponseBytes jResponseBytes = encode(message);
+        if (jResponseBytes == null) return;
+        channel.writeAndFlush(jResponseBytes);
     }
 
-    @Override
-    public void writeAndFlush(Object message) {
-        channel.writeAndFlush(message);
+    public JResponseBytes encode(Object message) {
+        if (message == null) {
+            logger.error("messge is null, message:{}, channel:{}", message, channel);
+            return null;
+        }
+
+        Packet annotation = message.getClass().getAnnotation(Packet.class);
+        if (annotation == null) {
+            logger.error("packet not found, message:{}, channel:{}", message, channel);
+            return null;
+        }
+
+        JResponseBytes jResponseBytes = new JResponseBytes(annotation.value());
+        Serializer serializer = SerializerFactory.getSerializer(SerializerType.MSGPACK.value());
+        byte[] bytes = serializer.writeObject(message);
+        jResponseBytes.bytes(SerializerType.MSGPACK.value(), bytes);
+        jResponseBytes.status(Status.OK.value());
+        return jResponseBytes;
     }
 
     @Override
