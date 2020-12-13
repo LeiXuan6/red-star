@@ -13,6 +13,7 @@
         <module>example</module>
         <module>dirty</module>
         <module>agent</module>
+        <module>static-data</module>
     </modules>
 
     <properties>
