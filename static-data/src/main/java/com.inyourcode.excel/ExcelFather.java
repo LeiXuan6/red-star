@@ -31,7 +31,7 @@ public class ExcelFather {
     private static final String EXCEL_ROOT = "/Users/jack/CodeSrcRead/red-star/static-data/src/main/resources/xlsx-conf";
     private static final String JSON_OUT_ROOT = "/Users/jack/CodeSrcRead/red-star/static-data/src/main/resources/server-conf/";
     private static final String JAVA_OUT_ROOT = "/Users/jack/CodeSrcRead/red-star/static-data/src/test/java";
-    private static final String TEMPLATE_FILE_ROOT = "/Users/jack/CodeSrcRead/excel-father/src/main/resources";
+    private static final String TEMPLATE_FILE_ROOT = "/Users/jack/CodeSrcRead/red-star/static-data/src/main/resources";
     private static  final String JAVA_PACKAGE_NAME = "com.inyourcode.excel.model";
     static Logger LOGGER = LoggerFactory.getLogger(ExcelFather.class);
 

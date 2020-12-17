@@ -28,9 +28,12 @@ import java.util.stream.Stream;
 public class JavaExporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaExporter.class);
     private static final Set<String> IMPORTS = new HashSet<>(Arrays.asList( "com.inyourcode.excel.serializer.JavaExcelList",
-                                                                            "com.inyourcode.excel.api.JavaExcelEnum",
+                                                                            "com.inyourcode.excel.serializer.JavaExcelEnum",
                                                                             "com.inyourcode.excel.api.ExcelTable",
-                                                                            "com.inyourcode.excel.api.JavaExcelModel"));
+                                                                            "com.inyourcode.excel.api.JavaExcelModel",
+                                                                            "com.inyourcode.excel.serializer.JavaEnumSerializer",
+                                                                            "com.inyourcode.excel.serializer.JavaListSerializer",
+                                                                            "com.alibaba.fastjson.annotation.JSONField"));
     private static final String DEFAULT_CONSTOM_CODE = "    @Override\n" +
                                                         "    public void afterInit() {\n" +
                                                         "    }";
@@ -72,6 +75,7 @@ public class JavaExporter {
             TypeColData[] typeHeader = model.getTypeHeader();
             for (int index = 0; index < nameHeader.length; index++) {
                 String type = "";
+                int serializeType = 0;
                 if (typeHeader[index].isFloat()) {
                     type = "float";
                 } else if (typeHeader[index].isInt()) {
@@ -80,11 +84,15 @@ public class JavaExporter {
                     type = "String";
                 } else if(typeHeader[index].isIntArry()){
                     type = "JavaExcelList<Integer>";
+                    serializeType = 1;
                 } else if(typeHeader[index].isFloatArray()){
                     type = "JavaExcelList<Integer>";
+                    serializeType = 1;
                 } else if(typeHeader[index].isStringArray()){
                     type = "JavaExcelList<String>";
+                    serializeType = 1;
                 } else if(typeHeader[index].isEnum()){
+                    serializeType = 2;
                     String enumHeaderStr = nameHeader[index].getVal().toString();
                     type = javaClassName + "Enum" + enumHeaderStr.substring(0,1).toUpperCase() + enumHeaderStr.substring(1);
 
@@ -117,7 +125,7 @@ public class JavaExporter {
                     continue;
                 }
 
-                JavaExportClass.JavaExportField javaExportField = new JavaExportClass.JavaExportField(type, nameHeader[index].getVal().toString(), commentHeader[index].getVal().toString());
+                JavaExportClass.JavaExportField javaExportField = new JavaExportClass.JavaExportField(type, nameHeader[index].getVal().toString(), commentHeader[index].getVal().toString(), serializeType);
                 javaExportClass.getFields().add(javaExportField);
             }
 

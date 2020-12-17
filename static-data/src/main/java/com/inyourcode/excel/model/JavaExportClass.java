@@ -81,12 +81,14 @@ public class JavaExportClass {
         private String fieldName;
         private String methodNamePrefix;
         private String comment;
+        private int serializerType;
 
-        public JavaExportField(String fieldType, String fieldName, String comment) {
+        public JavaExportField(String fieldType, String fieldName, String comment,int serializerType) {
             this.fieldType = fieldType;
             this.fieldName = fieldName;
             this.comment = comment;
             this.methodNamePrefix = this.fieldName.substring(0, 1).toUpperCase() + this.fieldName.substring(1);
+            this.serializerType = serializerType;
         }
 
         public String getFieldType() {
@@ -99,6 +101,14 @@ public class JavaExportClass {
 
         public String getMethodNamePrefix() {
             return methodNamePrefix;
+        }
+
+        public int getSerializerType() {
+            return serializerType;
+        }
+
+        public void setSerializerType(int serializerType) {
+            this.serializerType = serializerType;
         }
 
         public void setFieldType(String fieldType) {

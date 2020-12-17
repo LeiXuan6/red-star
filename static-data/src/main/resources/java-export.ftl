@@ -16,6 +16,12 @@ public class ${javaClassName} implements JavaExcelModel{
 
 <#list  fields as field>
     /** ${field.comment} */
+    <#if field.serializerType = 1>
+    @JSONField(deserializeUsing = JavaListSerializer.class)
+    </#if>
+    <#if field.serializerType = 2>
+    @JSONField(deserializeUsing = JavaEnumSerializer.class)
+    </#if>
     private ${field.fieldType}  ${field.fieldName};
 </#list>
 

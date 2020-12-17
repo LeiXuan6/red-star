@@ -85,7 +85,7 @@ public class JsonExporter {
                     rowMap.put(String.valueOf(jsonKey), colMap);
                 }
 
-                String jsonString = JSONObject.toJSONString(rowMap);
+                String jsonString = JSONObject.toJSONString(rowMap.values());
                 jsonMap.put(k, jsonString);
             } catch (Exception ex) {
                 LOGGER.error("JSON Data format conversion failed,sheet name = {} ", k, ex);
