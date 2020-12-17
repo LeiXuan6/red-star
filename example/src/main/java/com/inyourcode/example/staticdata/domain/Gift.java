@@ -1,9 +1,12 @@
-package com.inyourcode.excel.model;
+package com.inyourcode.example.staticdata.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.inyourcode.excel.api.ExcelTable;
-import com.inyourcode.excel.serializer.JavaExcelList;
-import com.inyourcode.excel.api.JavaExcelEnum;
 import com.inyourcode.excel.api.JavaExcelModel;
+import com.inyourcode.excel.serializer.JavaEnumSerializer;
+import com.inyourcode.excel.serializer.JavaExcelEnum;
+import com.inyourcode.excel.serializer.JavaExcelList;
+import com.inyourcode.excel.serializer.JavaListSerializer;
 
 /***
  * <pre>
@@ -21,11 +24,13 @@ public class Gift implements JavaExcelModel{
     private String  name;
     /** 类型 */
     private int  type;
-    /** 是否叠加[1:叠加|2:不叠加] */
+    /** 是否叠加[1:Stack|2:UnStack] */
+    @JSONField(deserializeUsing = JavaEnumSerializer.class)
     private GiftEnumAdd  add;
     /** 是否绑定 */
     private int  bind;
     /** 参数1 */
+    @JSONField(deserializeUsing = JavaListSerializer.class)
     private JavaExcelList<Integer>  param1;
 
     //自定义逻辑开始(此注释不可修改，不可重复)
@@ -84,8 +89,8 @@ public class Gift implements JavaExcelModel{
     }
 
     public static enum GiftEnumAdd implements JavaExcelEnum {
-        叠加(1,"叠加"),
-        不叠加(2,"不叠加"),
+        Stack(1,"Stack"),
+        UnStack(2,"UnStack"),
 
         ;
 
