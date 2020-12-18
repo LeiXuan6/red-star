@@ -15,29 +15,20 @@
  */
 package com.inyourcode.example.staticdata;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.io.Files;
-import com.inyourcode.excel.api.ExcelTable;
-import com.inyourcode.excel.api.JavaExcelModel;
+import com.inyourcode.example.staticdata.domain.Gift;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author JackLei
@@ -51,30 +42,19 @@ public class StaticClassConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(StaticClassConfig.class);
     @Autowired
     ApplicationContext applicationContext;
+    @Autowired
+    StaticDataManager staticDataManager;
+
+    @Bean
+    StaticDataManager staticDataBean(){
+        return new StaticDataManager();
+    }
 
     @PostConstruct
     void init() throws IOException {
-
-        Map<String,String> jsonDataMap = new HashMap<>();
-        ClassPathResource classPathResource = new ClassPathResource("server-conf");
-        File file = classPathResource.getFile();
-        File[] files = file.listFiles();
-        for (File jsonFile : files) {
-            List<String> strings = Files.readLines(jsonFile, Charset.forName("UTF-8"));
-            String jsonData = strings.get(0);
-            String fileName = jsonFile.getName();
-            jsonDataMap.put(fileName, jsonData);
-            LOGGER.info("The Json data read success,file:{},data:{}", fileName, jsonData);
-        }
-
-        Map<String, JavaExcelModel> beansOfType = applicationContext.getBeansOfType(JavaExcelModel.class);
-        beansOfType.forEach((k, v) -> {
-            Class<? extends JavaExcelModel> excelModelClazz = v.getClass();
-            ExcelTable annotation = excelModelClazz.getAnnotation(ExcelTable.class);
-            String dataFileName = annotation.data();
-            String data = jsonDataMap.get(dataFileName);
-            List<? extends JavaExcelModel> javaExcelModels = JSONObject.parseArray(data, excelModelClazz);
-            System.out.println(javaExcelModels);
-        });
+        staticDataManager.load(applicationContext);
+        Gift model = staticDataManager.getModel(Gift.class, 3003);
+        System.out.println(model);
     }
+
 }
