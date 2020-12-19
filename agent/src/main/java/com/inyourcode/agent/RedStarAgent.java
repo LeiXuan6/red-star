@@ -16,6 +16,7 @@
 package com.inyourcode.agent;
 
 import com.inyourcode.dirty.api.DirtyAble;
+import com.inyourcode.dirty.api.DirtyMetbodAble;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
@@ -41,8 +42,7 @@ public class RedStarAgent  {
             public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder,
                                                     TypeDescription typeDescription,
                                                     ClassLoader classLoader, JavaModule javaModule) {
-                String className = typeDescription.getCanonicalName();
-                builder = builder.method(ElementMatchers.isSetter())
+                builder = builder.method(ElementMatchers.isSetter().or(ElementMatchers.isAnnotatedWith(DirtyMetbodAble.class)))
                         .intercept(MethodDelegation.to(new DirtyMethodInterceptor()));
                 return builder;
             }

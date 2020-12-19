@@ -36,7 +36,7 @@ import java.util.Map;
  * @author JackLei
  */
 public class StaticDataManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StaticClassConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StaticDataManager.class);
     private Map<Class<? extends JavaExcelModel>, StaticDataContainer> DATA_MAP = new HashMap<>();
 
     public void load(ApplicationContext applicationContext) {

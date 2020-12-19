@@ -21,6 +21,8 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -29,6 +31,7 @@ import java.util.concurrent.Callable;
  * @author JackLei
  */
 public class DirtyMethodInterceptor {
+    private static final Logger LOGGER = LoggerFactory.getLogger("DIRTY-LOG");
 
     @RuntimeType
     public Object intercept(@This Object obj,
@@ -36,10 +39,15 @@ public class DirtyMethodInterceptor {
                             @SuperCall Callable<?> zuper,
                             @Origin Method method) throws Throwable {
         try {
+            System.out.println("AGENT:" + method.getName()+ "|" + obj.getClass() );
             Object ret = zuper.call();
             ((DirtyAble)obj).markdirty();
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(" mark dirty, class = {}, method = {}, arguments = {}", allArguments);
+            }
             return ret;
         } catch (Throwable t) {
+            LOGGER.error("markdirty error", t);
             throw t;
         }
     }
