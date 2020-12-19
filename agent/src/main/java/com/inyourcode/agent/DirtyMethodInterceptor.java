@@ -39,11 +39,10 @@ public class DirtyMethodInterceptor {
                             @SuperCall Callable<?> zuper,
                             @Origin Method method) throws Throwable {
         try {
-            System.out.println("AGENT:" + method.getName()+ "|" + obj.getClass() );
             Object ret = zuper.call();
             ((DirtyAble)obj).markdirty();
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(" mark dirty, class = {}, method = {}, arguments = {}", allArguments);
+                LOGGER.debug(" mark dirty, class = {}, method = {}, arguments = {}", obj.getClass(), method, allArguments);
             }
             return ret;
         } catch (Throwable t) {
