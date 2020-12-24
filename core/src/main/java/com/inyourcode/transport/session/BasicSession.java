@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.inyourcode.transport.session;
+import com.alibaba.fastjson.JSONObject;
 import com.inyourcode.serialization.api.Serializer;
 import com.inyourcode.serialization.api.SerializerFactory;
 import com.inyourcode.serialization.api.SerializerType;
@@ -78,6 +79,9 @@ public class BasicSession implements Session {
     public void write(Object message) {
         JResponseBytes jResponseBytes = encode(message);
         if (jResponseBytes == null) return;
+        if (logger.isDebugEnabled()) {
+            logger.debug("send message to client, invokeId={}, body={}", jResponseBytes.id(), JSONObject.toJSONString(message));
+        }
         channel.writeAndFlush(jResponseBytes);
     }
 

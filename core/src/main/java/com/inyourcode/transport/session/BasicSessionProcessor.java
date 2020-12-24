@@ -1,5 +1,6 @@
 package com.inyourcode.transport.session;
 
+import com.alibaba.fastjson.JSONObject;
 import com.inyourcode.common.util.StackTraceUtil;
 import com.inyourcode.serialization.api.Serializer;
 import com.inyourcode.serialization.api.SerializerFactory;
@@ -57,6 +58,9 @@ public class BasicSessionProcessor implements ProviderProcessor {
 
         Session session = sessionFactory.get((NettyChannel) channel);
         Object message = serializer.readObject(bytes, processerWapper.getMessageClazz());
+        if(logger.isDebugEnabled()) {
+            logger.debug("recive message from client,invokeId={},body={}", JSONObject.toJSONString(message));
+        }
         invoke(processerWapper, message, session);
     }
 
