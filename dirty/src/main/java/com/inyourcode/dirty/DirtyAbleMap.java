@@ -15,6 +15,7 @@
  */
 package com.inyourcode.dirty;
 
+import com.inyourcode.dirty.api.DirtyAble;
 import com.inyourcode.dirty.api.DirtyMetbodAble;
 
 import java.util.HashMap;
@@ -23,8 +24,16 @@ import java.util.Map;
 /**
  * @author JackLei
  */
-public class DirtyAbleMap<K, V>  extends ParentDirtyAble {
+public class DirtyAbleMap<K, V>  extends ChildDirtyAble {
     private HashMap<K, V> dataMap = new HashMap<>();
+
+    public DirtyAbleMap(DirtyAble dirtyAble) {
+        super(dirtyAble);
+    }
+
+    public DirtyAbleMap() {
+        super(new ParentDirtyAble());
+    }
 
     @DirtyMetbodAble
     public void put(K k, V v) {

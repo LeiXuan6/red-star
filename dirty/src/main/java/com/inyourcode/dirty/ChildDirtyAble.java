@@ -21,7 +21,7 @@ import com.inyourcode.dirty.api.DirtyAble;
  * @author JackLei
  */
 public class ChildDirtyAble implements DirtyAble {
-    private transient DirtyAble parent;
+    protected transient DirtyAble parent;
 
     public ChildDirtyAble(DirtyAble dirtyAble) {
         this.parent = dirtyAble;
