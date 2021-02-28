@@ -21,24 +21,24 @@ import com.inyourcode.dirty.api.DirtyAble;
  * @author JackLei
  */
 public class ChildDirtyAble implements DirtyAble {
-    protected transient DirtyAble parent;
+    protected transient DirtyMonitor monitor;
 
-    public ChildDirtyAble(DirtyAble dirtyAble) {
-        this.parent = dirtyAble;
+    public ChildDirtyAble(DirtyMonitor dirtyAble) {
+        this.monitor = dirtyAble;
     }
 
     @Override
-    public void markdirty() {
-        parent.markdirty();
+    public void markDirty() {
+        monitor.markDirty();
     }
 
     @Override
     public void unMarkDirty() {
-        parent.unMarkDirty();
+        monitor.unMarkDirty();
     }
 
     @Override
     public boolean isDirty() {
-        return parent.isDirty();
+        return monitor.isDirty();
     }
 }

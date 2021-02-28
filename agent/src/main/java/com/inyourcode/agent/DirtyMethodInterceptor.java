@@ -40,7 +40,7 @@ public class DirtyMethodInterceptor {
                             @Origin Method method) throws Throwable {
         try {
             Object ret = zuper.call();
-            ((DirtyAble)obj).markdirty();
+            ((DirtyAble)obj).markDirty();
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(" mark dirty, class = {}, method = {}, arguments = {}", obj.getClass(), method, allArguments);
             }

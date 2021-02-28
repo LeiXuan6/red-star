@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.dirty.api;
+package com.inyourcode.dirty;
 
 /**
  * @author JackLei
  */
-public interface DirtyAble {
-    void markDirty();
+public final class DirtyMonitor {
+    private transient boolean dirty;
 
-    void unMarkDirty();
+    public final void markDirty() {
+        this.dirty = true;
+    }
 
-    boolean isDirty();
+    public final void unMarkDirty() {
+        this.dirty = false;
+    }
+
+    public final boolean isDirty() {
+        return dirty;
+    }
 }

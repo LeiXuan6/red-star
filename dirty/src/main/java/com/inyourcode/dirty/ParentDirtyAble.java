@@ -20,21 +20,30 @@ import com.inyourcode.dirty.api.DirtyAble;
 /**
  * @author JackLei
  */
-public class ParentDirtyAble implements DirtyAble {
-    private transient boolean dirty;
+public abstract class ParentDirtyAble implements DirtyAble {
+    private transient DirtyMonitor monitor = new DirtyMonitor();
+
+    /**
+     * 初始化字对象时,序列化时无法注入monitor
+     */
+    public abstract void initChildMonitor();
 
     @Override
-    public void markdirty() {
-        this.dirty = true;
+    public void markDirty() {
+        monitor.markDirty();
     }
 
     @Override
     public void unMarkDirty() {
-        this.dirty = false;
+        monitor.unMarkDirty();
     }
 
     @Override
     public boolean isDirty() {
-        return dirty;
+        return monitor.isDirty();
+    }
+
+    public DirtyMonitor getMonitor() {
+        return monitor;
     }
 }

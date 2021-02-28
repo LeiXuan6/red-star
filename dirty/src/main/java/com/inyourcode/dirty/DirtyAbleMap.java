@@ -15,7 +15,6 @@
  */
 package com.inyourcode.dirty;
 
-import com.inyourcode.dirty.api.DirtyAble;
 import com.inyourcode.dirty.api.DirtyMetbodAble;
 
 import java.util.HashMap;
@@ -27,12 +26,20 @@ import java.util.Map;
 public class DirtyAbleMap<K, V>  extends ChildDirtyAble {
     private HashMap<K, V> dataMap = new HashMap<>();
 
-    public DirtyAbleMap(DirtyAble dirtyAble) {
-        super(dirtyAble);
+    public DirtyAbleMap(DirtyMonitor monitor) {
+        super(monitor);
     }
 
-    public DirtyAbleMap() {
-        super(new ParentDirtyAble());
+    /**
+     * 初始化parent,序列化时无法注入
+     * @param monitor
+     */
+    public void initMonitor(DirtyMonitor monitor) {
+        dataMap.forEach((k,v)->{
+            if (v instanceof ChildDirtyAble) {
+                ((ChildDirtyAble)v).monitor = monitor;
+            }
+        });
     }
 
     @DirtyMetbodAble
