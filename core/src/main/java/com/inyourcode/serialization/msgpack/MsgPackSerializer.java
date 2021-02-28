@@ -52,7 +52,7 @@ public class MsgPackSerializer extends Serializer {
         try {
             return messagePack.read(bytes, clazz);
         } catch (IOException e) {
-            logger.error("read obj error",StackTraceUtil.stackTrace(e));
+            logger.error("read obj error, bytes={}",StackTraceUtil.stackTrace(e));
         }
         return null;
     }

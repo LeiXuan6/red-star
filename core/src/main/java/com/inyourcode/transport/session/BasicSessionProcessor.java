@@ -58,8 +58,13 @@ public class BasicSessionProcessor implements ProviderProcessor {
 
         Session session = sessionFactory.get((NettyChannel) channel);
         Object message = serializer.readObject(bytes, processerWapper.getMessageClazz());
+        if (message == null) {
+            logger.error("protocol parse error,invokeId={},body={}", invokeId, bytes);
+            return;
+        }
+
         if(logger.isDebugEnabled()) {
-            logger.debug("recive message from client,invokeId={},body={}", JSONObject.toJSONString(message));
+            logger.debug("recive message from client,invokeId={},body={},bytes len={}, bytesStr={}", invokeId, JSONObject.toJSONString(message), bytes.length, new String(bytes));
         }
         invoke(processerWapper, message, session);
     }
