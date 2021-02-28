@@ -92,7 +92,7 @@ public class ProtoStuffSerializer extends Serializer {
 
     @Override
     public <T> T readObject(byte[] bytes, int offset, int length, Class<T> clazz) {
-        T msg = Reflects.newInstance(clazz, false);
+        T msg = Reflects.newInstance(clazz, true);
         Schema<T> schema = getSchema(clazz);
 
         ProtostuffIOUtil.mergeFrom(bytes, offset, length, msg, schema);
