@@ -9,7 +9,7 @@ import ${imp};
  *     此类由工具自动生成的代码.
  *     自定义代码、自定属性、方法可以写在注释内，不会被覆盖.
  * </pre>
- * @author red-star
+ * @author JackLei
  */
 @ExcelTable(data = "${dataFileName}")
 public class ${javaClassName} implements JavaExcelModel{

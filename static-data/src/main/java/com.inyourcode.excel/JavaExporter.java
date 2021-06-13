@@ -1,5 +1,6 @@
 package com.inyourcode.excel;
 
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.io.Files;
 import com.inyourcode.excel.model.JavaExportClass;
 import com.inyourcode.excel.model.SheetDataModel;
@@ -27,7 +28,8 @@ import java.util.stream.Stream;
 
 public class JavaExporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaExporter.class);
-    private static final Set<String> IMPORTS = new HashSet<>(Arrays.asList( "com.inyourcode.excel.serializer.JavaExcelList",
+    private static final Set<String> IMPORTS = new HashSet<>(Arrays.asList( "com.alibaba.fastjson.JSONArray;",
+                                                                            "com.inyourcode.excel.serializer.JavaExcelList",
                                                                             "com.inyourcode.excel.serializer.JavaExcelEnum",
                                                                             "com.inyourcode.excel.api.ExcelTable",
                                                                             "com.inyourcode.excel.api.JavaExcelModel",
@@ -92,6 +94,9 @@ public class JavaExporter {
                     } else if (typeHeader[index].isStringArray()) {
                         type = "JavaExcelList<String>";
                         serializeType = 1;
+                    } else if (typeHeader[index].isJSON()) {
+                        type = "JSONArray";
+                        serializeType = 1;
                     } else if (typeHeader[index].isEnum()) {
                         serializeType = 2;
                         String enumHeaderStr = nameHeader[index].getVal().toString();
@@ -102,19 +107,22 @@ public class JavaExporter {
 
                         String enumCommentStr = commentHeader[index].getVal().toString();
                         try {
-                            int startIndex = enumCommentStr.indexOf("[") + 1;
-                            int endIndex = enumCommentStr.indexOf("]");
-                            String enumStr = enumCommentStr.substring(startIndex, endIndex).replaceAll("\n", "");
-                            String[] enumStrArray = enumStr.split("\\|");
+                            String[] enumContentString = enumCommentStr.split("\n");
+                            if (enumContentString.length != 2) {
+                                LOGGER.error("export java enum error, enumCommentStr len not match，name:{}, enum:{}", name, enumCommentStr);
+                                continue;
+                            }
 
-                            for (String enumElement : enumStrArray) {
-                                String[] enumFieldEntry = enumElement.split(":");
-
+                            JSONArray enumJsonArray = JSONArray.parseArray(enumContentString[1]);
+                            for (int i = 0; i < enumJsonArray.size(); i++ ) {
+                                String enumJsonString = enumJsonArray.getString(i);
+                                String[] enumFieldArray = enumJsonString.split("\\|");
                                 JavaExportClass.JavaExportEnumElement enumElementClazz = new JavaExportClass.JavaExportEnumElement();
-                                enumElementClazz.setType(Integer.valueOf(enumFieldEntry[0]));
-                                enumElementClazz.setDesc(enumFieldEntry[1]);
+                                enumElementClazz.setType(Integer.valueOf(enumFieldArray[0]));
+                                enumElementClazz.setDesc(enumFieldArray[1]);
                                 javaExportEnumClazz.getFields().add(enumElementClazz);
                             }
+
                             javaExportClass.getEnumClassList().add(javaExportEnumClazz);
                         } catch (Exception ex) {
                             LOGGER.error("export java enum error, This format configuration is incorrect，name:{}, enum:{}", name, enumCommentStr);

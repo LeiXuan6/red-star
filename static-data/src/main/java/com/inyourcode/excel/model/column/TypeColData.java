@@ -53,4 +53,8 @@ public class TypeColData extends RowColData {
     public boolean isEnum() {
         return getVal().equals("enum");
     }
+
+    public boolean isJSON() {
+        return getVal().equals("json");
+    }
 }

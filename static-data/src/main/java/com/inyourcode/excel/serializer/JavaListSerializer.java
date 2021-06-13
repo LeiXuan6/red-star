@@ -16,6 +16,7 @@
 package com.inyourcode.excel.serializer;
 
 import com.alibaba.excel.util.StringUtils;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
@@ -37,14 +38,15 @@ public class JavaListSerializer implements ObjectDeserializer {
         }
         Type[] actualTypeArguments = ((ParameterizedTypeImpl) type).getActualTypeArguments();
 
-        String[] split = content.split(",");
-        for (int index = 0; index < split.length; index++) {
+        JSONArray jsonArray = JSONArray.parseArray(content);
+        for (int index = 0; index < jsonArray.size(); index++) {
+
             if (actualTypeArguments[0] == Integer.class) {
-                javaList.add(Integer.valueOf(split[index]));
+                javaList.add(jsonArray.getObject(index, Integer.class));
             } else if (actualTypeArguments[0] == Float.class) {
-                javaList.add(Float.valueOf(split[index]));
+                javaList.add(jsonArray.getObject(index, Float.class));
             } else {
-                javaList.add(split[index]);
+                javaList.add(jsonArray.getObject(index, String.class));
             }
         }
         return javaList;

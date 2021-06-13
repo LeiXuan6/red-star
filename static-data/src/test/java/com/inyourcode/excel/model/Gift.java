@@ -6,6 +6,7 @@ import com.inyourcode.excel.serializer.JavaListSerializer;
 import com.inyourcode.excel.serializer.JavaExcelList;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.inyourcode.excel.serializer.JavaEnumSerializer;
+import com.alibaba.fastjson.JSONArray;;
 import com.inyourcode.excel.api.JavaExcelModel;
 
 /***
@@ -13,7 +14,7 @@ import com.inyourcode.excel.api.JavaExcelModel;
  *     此类由工具自动生成的代码.
  *     自定义代码、自定属性、方法可以写在注释内，不会被覆盖.
  * </pre>
- * @author red-star
+ * @author JackLei
  */
 @ExcelTable(data = "gift.json")
 public class Gift implements JavaExcelModel{
@@ -24,14 +25,24 @@ public class Gift implements JavaExcelModel{
     private String  name;
     /** 类型 */
     private int  type;
-    /** 是否叠加[1:Stack|2:UnStack] */
+    /** 是否叠加
+["1|Stack|叠加","2|UnStack|非叠加"] */
     @JSONField(deserializeUsing = JavaEnumSerializer.class)
     private GiftEnumAdd  add;
     /** 是否绑定 */
     private int  bind;
-    /** 参数1 */
+    /** 整数数组 */
     @JSONField(deserializeUsing = JavaListSerializer.class)
     private JavaExcelList<Integer>  param1;
+    /** 浮点数数组 */
+    @JSONField(deserializeUsing = JavaListSerializer.class)
+    private JavaExcelList<Integer>  param2;
+    /** 参数3字符串数组 */
+    @JSONField(deserializeUsing = JavaListSerializer.class)
+    private JavaExcelList<String>  param3;
+    /** JSONArray */
+    @JSONField(deserializeUsing = JavaListSerializer.class)
+    private JSONArray  param4;
 
     //自定义逻辑开始(此注释不可修改，不可重复)
     @Override
@@ -86,6 +97,30 @@ public class Gift implements JavaExcelModel{
 
     public JavaExcelList<Integer> getParam1(){
         return this.param1;
+    }
+
+    public void setParam2(JavaExcelList<Integer> param2){
+        this.param2 = param2;
+    }
+
+    public JavaExcelList<Integer> getParam2(){
+        return this.param2;
+    }
+
+    public void setParam3(JavaExcelList<String> param3){
+        this.param3 = param3;
+    }
+
+    public JavaExcelList<String> getParam3(){
+        return this.param3;
+    }
+
+    public void setParam4(JSONArray param4){
+        this.param4 = param4;
+    }
+
+    public JSONArray getParam4(){
+        return this.param4;
     }
 
     public static enum GiftEnumAdd implements JavaExcelEnum {
