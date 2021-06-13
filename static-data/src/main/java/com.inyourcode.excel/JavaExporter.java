@@ -73,62 +73,65 @@ public class JavaExporter {
             CommentColData[] commentHeader = model.getCommentHeader();
             NameColData[] nameHeader = model.getNameHeader();
             TypeColData[] typeHeader = model.getTypeHeader();
-            for (int index = 0; index < nameHeader.length; index++) {
-                String type = "";
-                int serializeType = 0;
-                if (typeHeader[index].isFloat()) {
-                    type = "float";
-                } else if (typeHeader[index].isInt()) {
-                    type = "int";
-                } else if (typeHeader[index].isString()) {
-                    type = "String";
-                } else if(typeHeader[index].isIntArry()){
-                    type = "JavaExcelList<Integer>";
-                    serializeType = 1;
-                } else if(typeHeader[index].isFloatArray()){
-                    type = "JavaExcelList<Integer>";
-                    serializeType = 1;
-                } else if(typeHeader[index].isStringArray()){
-                    type = "JavaExcelList<String>";
-                    serializeType = 1;
-                } else if(typeHeader[index].isEnum()){
-                    serializeType = 2;
-                    String enumHeaderStr = nameHeader[index].getVal().toString();
-                    type = javaClassName + "Enum" + enumHeaderStr.substring(0,1).toUpperCase() + enumHeaderStr.substring(1);
+            try {
+                for (int index = 0; index < nameHeader.length; index++) {
+                    String type = "";
+                    int serializeType = 0;
+                    if (typeHeader[index].isFloat()) {
+                        type = "float";
+                    } else if (typeHeader[index].isInt()) {
+                        type = "int";
+                    } else if (typeHeader[index].isString()) {
+                        type = "String";
+                    } else if (typeHeader[index].isIntArry()) {
+                        type = "JavaExcelList<Integer>";
+                        serializeType = 1;
+                    } else if (typeHeader[index].isFloatArray()) {
+                        type = "JavaExcelList<Integer>";
+                        serializeType = 1;
+                    } else if (typeHeader[index].isStringArray()) {
+                        type = "JavaExcelList<String>";
+                        serializeType = 1;
+                    } else if (typeHeader[index].isEnum()) {
+                        serializeType = 2;
+                        String enumHeaderStr = nameHeader[index].getVal().toString();
+                        type = javaClassName + "Enum" + enumHeaderStr.substring(0, 1).toUpperCase() + enumHeaderStr.substring(1);
 
-                    JavaExportClass.JavaExportEnum javaExportEnumClazz = new JavaExportClass.JavaExportEnum();
-                    javaExportEnumClazz.setEnumClassName(type);
+                        JavaExportClass.JavaExportEnum javaExportEnumClazz = new JavaExportClass.JavaExportEnum();
+                        javaExportEnumClazz.setEnumClassName(type);
 
-                    String enumCommentStr = commentHeader[index].getVal().toString();
-                    try {
-                        int startIndex = enumCommentStr.indexOf("[") + 1;
-                        int endIndex = enumCommentStr.indexOf("]");
-                        String enumStr = enumCommentStr.substring(startIndex, endIndex).replaceAll("\n", "");
-                        String[] enumStrArray = enumStr.split("\\|");
+                        String enumCommentStr = commentHeader[index].getVal().toString();
+                        try {
+                            int startIndex = enumCommentStr.indexOf("[") + 1;
+                            int endIndex = enumCommentStr.indexOf("]");
+                            String enumStr = enumCommentStr.substring(startIndex, endIndex).replaceAll("\n", "");
+                            String[] enumStrArray = enumStr.split("\\|");
 
-                        for (String enumElement : enumStrArray) {
-                            String[] enumFieldEntry = enumElement.split(":");
+                            for (String enumElement : enumStrArray) {
+                                String[] enumFieldEntry = enumElement.split(":");
 
-                            JavaExportClass.JavaExportEnumElement enumElementClazz = new JavaExportClass.JavaExportEnumElement();
-                            enumElementClazz.setType(Integer.valueOf(enumFieldEntry[0]));
-                            enumElementClazz.setDesc(enumFieldEntry[1]);
-                            javaExportEnumClazz.getFields().add(enumElementClazz);
+                                JavaExportClass.JavaExportEnumElement enumElementClazz = new JavaExportClass.JavaExportEnumElement();
+                                enumElementClazz.setType(Integer.valueOf(enumFieldEntry[0]));
+                                enumElementClazz.setDesc(enumFieldEntry[1]);
+                                javaExportEnumClazz.getFields().add(enumElementClazz);
+                            }
+                            javaExportClass.getEnumClassList().add(javaExportEnumClazz);
+                        } catch (Exception ex) {
+                            LOGGER.error("export java enum error, This format configuration is incorrect，name:{}, enum:{}", name, enumCommentStr);
+                            continue;
                         }
-                        javaExportClass.getEnumClassList().add(javaExportEnumClazz);
-                    }catch (Exception ex) {
-                        LOGGER.error("export java enum error, This format configuration is incorrect，name:{}, enum:{}", name, enumCommentStr);
+
+                    } else {
+                        LOGGER.error("export java error, type not found, type:{}, data:{},name:{}", typeHeader[index].getVal(), typeHeader[index], name);
                         continue;
                     }
 
-                } else {
-                    LOGGER.error("export java error, type not found,type:{},name:{}", typeHeader[index], name);
-                    continue;
+                    JavaExportClass.JavaExportField javaExportField = new JavaExportClass.JavaExportField(type, nameHeader[index].getVal().toString(), commentHeader[index].getVal().toString(), serializeType);
+                    javaExportClass.getFields().add(javaExportField);
                 }
-
-                JavaExportClass.JavaExportField javaExportField = new JavaExportClass.JavaExportField(type, nameHeader[index].getVal().toString(), commentHeader[index].getVal().toString(), serializeType);
-                javaExportClass.getFields().add(javaExportField);
+            }catch (Exception ex) {
+                LOGGER.error("export java error, type not found, sheentName:{}, export java failed", name);
             }
-
             genJavaClass(javaExportClass);
         });
     }

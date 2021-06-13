@@ -127,6 +127,11 @@ public class ExcelReaderListener extends AnalysisEventListener {
     public void doAfterAllAnalysed(AnalysisContext context) {
         ReadSheetHolder readSheetHolder = context.readSheetHolder();
         String sheetName = readSheetHolder.getSheetName();
+        //只读第一个sheet
+        Integer sheetNo = readSheetHolder.getSheetNo();
+        if (sheetNo >= 1){
+            return;
+        }
 
         ReadWorkbookHolder readWorkbookHolder = context.readWorkbookHolder();
         String fileName = readWorkbookHolder.getFile().getName();
