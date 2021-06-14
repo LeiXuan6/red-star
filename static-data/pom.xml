@@ -94,6 +94,9 @@
                     <excludes>
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.properties</exclude>
+                        <exclude>**/server-conf/*</exclude>
+                        <exclude>**/xlsx-conf/*</exclude>
+                        <exclude>**/*.ftl</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -124,7 +127,6 @@
                 <executions>
                     <execution>
                         <id>copy-resources</id>
-                        <!--&lt;!&ndash; here the phase you need &ndash;&gt;-->
                         <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
