@@ -24,11 +24,11 @@ public class JsonExporter {
 
     protected static void exportJson(String excelPath, String outPath, Map<String, SheetDataModel> sheetDataModelMap) {
         LOGGER.info("JSON_OUT_PATH={}", outPath);
-        Map<String, String> jsonMap = convertToJsonFile(sheetDataModelMap);
+        Map<String, Map> jsonMap = convertToJsonFile(sheetDataModelMap);
         doWriteToJsonFile(outPath, jsonMap);
     }
 
-    private static void doWriteToJsonFile(String outPath, Map<String, String> jsonMap) {
+    private static void doWriteToJsonFile(String outPath, Map<String, Map> jsonMap) {
         jsonMap.forEach((k, v) -> {
             try {
 
@@ -37,7 +37,7 @@ public class JsonExporter {
                     file.createNewFile();
                 }
 
-                Files.write(v.getBytes(Charset.forName("UTF-8")), file);
+                Files.write(JSONObject.toJSONString(v).getBytes(Charset.forName("UTF-8")), file);
                 LOGGER.info("export json:{}", file.getName());
             } catch (IOException e) {
                 LOGGER.error("write to json file errpr, out path = {}", outPath, e);
@@ -45,8 +45,8 @@ public class JsonExporter {
         });
     }
 
-    private static Map<String, String> convertToJsonFile(Map<String, SheetDataModel> sheetDataModelMap) {
-        Map<String, String> jsonMap = new HashMap<>();
+    private static Map<String, Map> convertToJsonFile(Map<String, SheetDataModel> sheetDataModelMap) {
+        Map<String, Map> jsonMap = new HashMap<>();
         sheetDataModelMap.forEach((k, v) -> {
             try {
                 CommentColData[] commentHeader = v.getCommentHeader();
@@ -85,8 +85,7 @@ public class JsonExporter {
                     rowMap.put(String.valueOf(jsonKey), colMap);
                 }
 
-                String jsonString = JSONObject.toJSONString(rowMap);
-                jsonMap.put(k, jsonString);
+                jsonMap.put(k, rowMap);
             } catch (Exception ex) {
                 LOGGER.error("JSON Data format conversion failed,sheet name = {} ", k, ex);
                 ex.printStackTrace();

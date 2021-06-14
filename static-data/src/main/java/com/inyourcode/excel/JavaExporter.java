@@ -78,6 +78,7 @@ public class JavaExporter {
             try {
                 for (int index = 0; index < nameHeader.length; index++) {
                     String type = "";
+                    /**指定json序列化器*/
                     int serializeType = 0;
                     if (typeHeader[index].isFloat()) {
                         type = "float";
@@ -93,9 +94,6 @@ public class JavaExporter {
                         serializeType = 1;
                     } else if (typeHeader[index].isStringArray()) {
                         type = "JavaExcelList<String>";
-                        serializeType = 1;
-                    } else if (typeHeader[index].isJSON()) {
-                        type = "JSONArray";
                         serializeType = 1;
                     } else if (typeHeader[index].isEnum()) {
                         serializeType = 2;

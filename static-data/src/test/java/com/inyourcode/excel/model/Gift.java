@@ -40,9 +40,6 @@ public class Gift implements JavaExcelModel{
     /** 参数3字符串数组 */
     @JSONField(deserializeUsing = JavaListSerializer.class)
     private JavaExcelList<String>  param3;
-    /** JSONArray */
-    @JSONField(deserializeUsing = JavaListSerializer.class)
-    private JSONArray  param4;
 
     //自定义逻辑开始(此注释不可修改，不可重复)
     @Override
@@ -113,14 +110,6 @@ public class Gift implements JavaExcelModel{
 
     public JavaExcelList<String> getParam3(){
         return this.param3;
-    }
-
-    public void setParam4(JSONArray param4){
-        this.param4 = param4;
-    }
-
-    public JSONArray getParam4(){
-        return this.param4;
     }
 
     public static enum GiftEnumAdd implements JavaExcelEnum {

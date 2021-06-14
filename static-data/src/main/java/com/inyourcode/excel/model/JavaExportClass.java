@@ -81,6 +81,7 @@ public class JavaExportClass {
         private String fieldName;
         private String methodNamePrefix;
         private String comment;
+        /* json 序列化类型**/
         private int serializerType;
 
         public JavaExportField(String fieldType, String fieldName, String comment,int serializerType) {
