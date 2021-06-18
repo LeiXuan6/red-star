@@ -15,7 +15,7 @@
  */
 package com.inyourcode.cluster;
 
-import com.inyourcode.cluster.api.INodeType;
+import com.inyourcode.cluster.api.IClusterNodeType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,17 +23,17 @@ import java.util.Map;
 /**
  * @author JackLei
  */
-public class ClusterNodeInfo {
+public class ClusterNodeConf {
     private String groupId;
     private String uuid;
     private String nodeId;
     private String nodeName;
-    private INodeType nodeType;
-    private String nodeIp;
+    private IClusterNodeType nodeType;
+    private String clusterIp;
     private long reportTimeMillis;
     private int  currentLoad;
     private int maxLoad;
-
+    private long checkActiveTimeMillis;
     private Map<String, String> extend = new HashMap<>();
 
     public void setGroupId(String groupId) {
@@ -48,12 +48,12 @@ public class ClusterNodeInfo {
         this.nodeName = nodeName;
     }
 
-    public void setNodeType(INodeType nodeType) {
+    public void setNodeType(IClusterNodeType nodeType) {
         this.nodeType = nodeType;
     }
 
-    public void setNodeIp(String nodeIp) {
-        this.nodeIp = nodeIp;
+    public void setClusterIp(String clusterIp) {
+        this.clusterIp = clusterIp;
     }
 
     public void setReportTimeMillis(long reportTimeMillis) {
@@ -88,12 +88,12 @@ public class ClusterNodeInfo {
         return nodeName;
     }
 
-    public INodeType getNodeType() {
+    public IClusterNodeType getNodeType() {
         return nodeType;
     }
 
-    public String getNodeIp() {
-        return nodeIp;
+    public String getClusterIp() {
+        return clusterIp;
     }
 
     public long getReportTimeMillis() {
@@ -112,19 +112,27 @@ public class ClusterNodeInfo {
         return extend;
     }
 
+    public long getCheckActiveTimeMillis() {
+        return checkActiveTimeMillis;
+    }
+
+    public void setCheckActiveTimeMillis(long checkActiveTimeMillis) {
+        this.checkActiveTimeMillis = checkActiveTimeMillis;
+    }
 
     @Override
     public String toString() {
-        return "ClusterNodeInfo{" +
+        return "ClusterNodeConf{" +
                 "groupId='" + groupId + '\'' +
                 ", uuid='" + uuid + '\'' +
                 ", nodeId='" + nodeId + '\'' +
                 ", nodeName='" + nodeName + '\'' +
                 ", nodeType=" + nodeType +
-                ", nodeIp='" + nodeIp + '\'' +
+                ", nodeIp='" + clusterIp + '\'' +
                 ", reportTimeMillis=" + reportTimeMillis +
                 ", currentLoad=" + currentLoad +
                 ", maxLoad=" + maxLoad +
+                ", checkTimeMillis=" + checkActiveTimeMillis +
                 ", extend=" + extend +
                 '}';
     }

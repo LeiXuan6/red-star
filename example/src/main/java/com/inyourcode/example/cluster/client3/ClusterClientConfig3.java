@@ -15,10 +15,9 @@
  */
 package com.inyourcode.example.cluster.client3;
 
-import com.inyourcode.cluster.ClusterNodeInfo;
-import com.inyourcode.cluster.ClusterNodeClient;
+import com.inyourcode.cluster.ClusterNodeConf;
 import com.inyourcode.cluster.api.JClusterClient;
-import com.inyourcode.example.cluster.TestClusterType;
+import com.inyourcode.cluster.api.ClusterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,28 +55,28 @@ public class ClusterClientConfig3 {
     @Autowired
     JClusterClient clusterClient;
     @Autowired
-    ClusterNodeInfo clusterNodeInfo;
+    ClusterNodeConf clusterNodeInfo;
 
     @Bean
-    public ClusterNodeInfo clusterNodeInfo() {
-        ClusterNodeInfo clusterNodeInfo = new ClusterNodeInfo();
+    public ClusterNodeConf clusterNodeInfo() {
+        ClusterNodeConf clusterNodeInfo = new ClusterNodeConf();
         clusterNodeInfo.setUuid(UUID.randomUUID().toString() + "_" + nodeId);
         clusterNodeInfo.setGroupId(clusterGroupId);
         clusterNodeInfo.setNodeId(nodeId);
         clusterNodeInfo.setNodeName(nodeName);
-        clusterNodeInfo.setNodeIp(ip);
+        clusterNodeInfo.setClusterIp(ip);
         clusterNodeInfo.setMaxLoad(maxLoad);
-        clusterNodeInfo.setNodeType(TestClusterType.LOBBY);
+        clusterNodeInfo.setNodeType(ClusterType.LOBBY);
         clusterNodeInfo.setReportTimeMillis(System.currentTimeMillis());
         return clusterNodeInfo;
     }
 
-    @Bean
-    JClusterClient clusterClient(ClusterNodeInfo clusterNodeInfo) {
-        ClusterNodeClient clusterNodeClient = new ClusterNodeClient(clusterNodeInfo);
-        clusterNodeClient.connectToClusterServer(clusterServerIp);
-        return clusterNodeClient;
-    }
+//    @Bean
+//    JClusterClient clusterClient(ClusterNodeConf clusterNodeInfo) {
+//        ClusterNodeClient clusterNodeClient = new ClusterNodeClient(clusterNodeInfo);
+//        clusterNodeClient.connectToClusterServer(clusterServerIp);
+//        return clusterNodeClient;
+//    }
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public void tick() {

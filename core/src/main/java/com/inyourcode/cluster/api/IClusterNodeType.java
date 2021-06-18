@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.example.cluster.server;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+package com.inyourcode.cluster.api;
 
 /**
  * @author JackLei
  */
-public class TestClusterServer {
+public interface IClusterNodeType {
 
-    public static void main(String[] args) {
-        AnnotationConfigApplicationContext configApplicationContext = new AnnotationConfigApplicationContext();
-        configApplicationContext.register(ClusterServerConfig.class);
-        configApplicationContext.refresh();
-    }
+    int getType();
+
+    String getName();
 }

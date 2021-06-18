@@ -15,9 +15,9 @@
  */
 package com.inyourcode.cluster.provider;
 
-import com.inyourcode.cluster.ClusterNodeInfo;
+import com.inyourcode.cluster.ClusterNodeConf;
 import com.inyourcode.cluster.ClusterService;
-import com.inyourcode.cluster.api.INodeType;
+import com.inyourcode.cluster.api.IClusterNodeType;
 import com.inyourcode.transport.rpc.ServiceProviderImpl;
 
 /**
@@ -27,7 +27,7 @@ import com.inyourcode.transport.rpc.ServiceProviderImpl;
 public class ClusterSelectProviderIml implements ClusterSelectProvider {
 
     @Override
-    public ClusterNodeInfo select(INodeType type) {
+    public ClusterNodeConf select(IClusterNodeType type) {
         return ClusterService.select(type);
     }
 }

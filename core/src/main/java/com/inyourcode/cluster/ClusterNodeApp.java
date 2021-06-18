@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.example.cluster.client1;
+package com.inyourcode.cluster;
 
-import com.inyourcode.cluster.ClusterNodeClient;
-import com.inyourcode.cluster.ClusterNodeInfo;
+import com.inyourcode.cluster.api.ClusterType;
 import com.inyourcode.cluster.api.JClusterClient;
-import com.inyourcode.example.cluster.TestClusterType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +26,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
@@ -41,7 +37,7 @@ import java.util.UUID;
 @PropertySource("classpath:cluster-client.properties")
 @EnableScheduling
 @ComponentScan(basePackages = "${app.scanpackages}")
-public class ClusterClientConfig {
+public class ClusterNodeApp {
     @Value("${cluster.group.id}")
     private String clusterGroupId;
     @Value("${cluster.node.id}")
@@ -49,34 +45,32 @@ public class ClusterClientConfig {
     @Value("${cluster.node.name}")
     private String nodeName;
     @Value("${cluster.node.ip}")
-    private String ip;
+    private String clusterIp;
     @Value("${cluster.node.maxLoad}")
     private int maxLoad;
-    @Value("${cluster.server.ip}")
-    private String clusterServerIp;
-    @Autowired
-    JClusterClient clusterClient;
-    @Autowired
-    ClusterNodeInfo clusterNodeInfo;
 
     @Bean
-    public ClusterNodeInfo clusterNodeInfo() {
-        ClusterNodeInfo clusterNodeInfo = new ClusterNodeInfo();
+    public ClusterNodeConf clusterNodeConf() {
+        ClusterNodeConf clusterNodeInfo = new ClusterNodeConf();
         clusterNodeInfo.setUuid(UUID.randomUUID().toString() + "_" + nodeId);
         clusterNodeInfo.setGroupId(clusterGroupId);
         clusterNodeInfo.setNodeId(nodeId);
         clusterNodeInfo.setNodeName(nodeName);
-        clusterNodeInfo.setNodeIp(ip);
+        clusterNodeInfo.setClusterIp(clusterIp);
         clusterNodeInfo.setMaxLoad(maxLoad);
-        clusterNodeInfo.setNodeType(TestClusterType.LOBBY);
-        clusterNodeInfo.setReportTimeMillis(System.currentTimeMillis());
+        clusterNodeInfo.setNodeType(ClusterType.LOBBY);
         return clusterNodeInfo;
     }
 
     @Bean
-    JClusterClient clusterClient(ClusterNodeInfo clusterNodeInfo) {
-        ClusterNodeClient clusterNodeClient = new ClusterNodeClient(clusterNodeInfo);
-        clusterNodeClient.connectToClusterServer(clusterServerIp);
+    ClusterNodeServer clusterNodeServer(ClusterNodeConf clusterNodeConf) {
+        ClusterNodeServer clusterNodeServer = new ClusterNodeServer(clusterNodeConf.get);
+        clusterNodeServer.bind()
+    }
+
+    @Bean
+    JClusterClient clusterClient(ClusterNodeConf clusterNodeConf) {
+        ClusterNodeClient clusterNodeClient = new ClusterNodeClient(ClusterType.LOBBY, clusterNodeConf);
         return clusterNodeClient;
     }
 
@@ -84,26 +78,24 @@ public class ClusterClientConfig {
     public void tick() {
         Random random = new Random();
         int randomLoad = random.nextInt(1000);
-        clusterNodeInfo.setCurrentLoad(randomLoad);
-        clusterNodeInfo.setReportTimeMillis(System.currentTimeMillis());
-        clusterClient.reportNodeInfo();
-    }
 
-    @Scheduled(initialDelay = 6000, fixedRate = 2000)
-    public void forwardMessage(){
-        clusterClient.broadcastMessageToCluster("hello gays");
     }
-
-    @Scheduled(initialDelay = 7000, fixedRate = 4000)
-    public void sendMessageToCenter(){
-        clusterClient.sendMessageToCenter("hello center");
-    }
-
-    @Scheduled(initialDelay = 7000, fixedRate = 6000)
-    public void sendMessageToCluster(){
-        HashSet clusterNodeIdSet = new HashSet();
-        clusterNodeIdSet.add("3");
-        clusterClient.sendMessageToCluster("hello cluster[3]", clusterNodeIdSet);
-    }
+//
+//    @Scheduled(initialDelay = 6000, fixedRate = 2000)
+//    public void forwardMessage(){
+//        clusterClient.broadcastMessageToCluster("hello gays");
+//    }
+//
+//    @Scheduled(initialDelay = 7000, fixedRate = 4000)
+//    public void sendMessageToCenter(){
+//        clusterClient.connectToCluster("hello center");
+//    }
+//
+//    @Scheduled(initialDelay = 7000, fixedRate = 6000)
+//    public void sendMessageToCluster(){
+//        HashSet clusterNodeIdSet = new HashSet();
+//        clusterNodeIdSet.add("3");
+//        clusterClient.sendMessageToCluster("hello cluster[3]", clusterNodeIdSet);
+//    }
 }
 

@@ -245,7 +245,7 @@ public class ClusterNodeServer extends NettyTcpAcceptor {
 
                 switch (obj.getMessageCode()) {
                     case JProtocolHeader.CLUSTER_NODE_REGISTER: {
-                        ClusterService.registerClusterNode(ctx.channel(), (ClusterNodeInfo) obj.getData());
+                        ClusterService.registerClusterNode(ctx.channel(), (ClusterNodeConf) obj.getData());
                         break;
                     }
                     case JProtocolHeader.CLUSTER_MESSAGE_TO_CLUSTER: {

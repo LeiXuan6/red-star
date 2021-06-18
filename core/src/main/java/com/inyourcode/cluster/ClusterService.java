@@ -1,6 +1,6 @@
 package com.inyourcode.cluster;
 
-import com.inyourcode.cluster.api.INodeType;
+import com.inyourcode.cluster.api.IClusterNodeType;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +18,11 @@ public class ClusterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterService.class);
     private static final long EXPIRE_TIME_MILLIS = 5 * 1000L;
     private static final ConcurrentHashMap<String, ClusterChannel> NODE_MAP = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<INodeType, ClusterTypeNode> NODE_TYPE_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<IClusterNodeType, ClusterTypeNode> NODE_TYPE_MAP = new ConcurrentHashMap<>();
 
-    protected static void registerClusterNode(Channel channel, ClusterNodeInfo clusterNodeInfo) {
+    protected static void registerClusterNode(Channel channel, ClusterNodeConf clusterNodeInfo) {
         String nodeId = clusterNodeInfo.getNodeId();
-        INodeType nodeType = clusterNodeInfo.getNodeType();
+        IClusterNodeType nodeType = clusterNodeInfo.getNodeType();
 
         //缓存ClusterChannel
         ClusterChannel clusterChannel = NODE_MAP.get(nodeId);
@@ -50,7 +50,7 @@ public class ClusterService {
         }
     }
 
-    public static ClusterNodeInfo select(INodeType nodeType) {
+    public static ClusterNodeConf select(IClusterNodeType nodeType) {
         ClusterTypeNode clusterTypeNode = NODE_TYPE_MAP.get(nodeType);
         if (clusterTypeNode == null) {
             return null;
@@ -63,7 +63,7 @@ public class ClusterService {
             return;
         }
         NODE_TYPE_MAP.forEach((type, node) -> {
-            ArrayList<ClusterNodeInfo> tempList = new ArrayList(node.clusterNodeMap.values());
+            ArrayList<ClusterNodeConf> tempList = new ArrayList(node.clusterNodeMap.values());
             if (tempList.isEmpty()) {
                 return;
             }
@@ -77,7 +77,7 @@ public class ClusterService {
         ArrayList<ClusterChannel> nodeInfos = new ArrayList<>(values);
         long currentTimeMillis = System.currentTimeMillis();
         for (ClusterChannel clusterChannel : nodeInfos) {
-            ClusterNodeInfo clusterNodeInfo =  clusterChannel.clusterNodeInfo;
+            ClusterNodeConf clusterNodeInfo =  clusterChannel.clusterNodeInfo;
             if (clusterNodeInfo.getReportTimeMillis() + EXPIRE_TIME_MILLIS <= currentTimeMillis) {
                 LOGGER.error("check expire node, node = {}", clusterNodeInfo.getNodeName());
                 removeNode(clusterNodeInfo.getNodeId());
@@ -89,7 +89,7 @@ public class ClusterService {
     private static void removeNode(String nodeId) {
         ClusterChannel remove = NODE_MAP.remove(nodeId);
         if (remove != null) {
-            INodeType nodeType = remove.clusterNodeInfo.getNodeType();
+            IClusterNodeType nodeType = remove.clusterNodeInfo.getNodeType();
             String removeNodeId = remove.clusterNodeInfo.getNodeId();
             ClusterTypeNode clusterTypeNode = NODE_TYPE_MAP.get(nodeType);
             if (clusterTypeNode != null) {
@@ -140,10 +140,10 @@ public class ClusterService {
 
     }
 
-    static class LoadComparator implements Comparator<ClusterNodeInfo> {
+    static class LoadComparator implements Comparator<ClusterNodeConf> {
 
         @Override
-        public int compare(ClusterNodeInfo o1, ClusterNodeInfo o2) {
+        public int compare(ClusterNodeConf o1, ClusterNodeConf o2) {
             if (o1.getCurrentLoad() > o2.getCurrentLoad()) {
                 return 1;
             } else if (o1.getCurrentLoad() < o2.getCurrentLoad()) {
@@ -155,21 +155,21 @@ public class ClusterService {
     }
 
     static class ClusterChannel {
-        ClusterNodeInfo clusterNodeInfo;
+        ClusterNodeConf clusterNodeInfo;
         Channel channel;
 
-        public ClusterChannel(ClusterNodeInfo clusterNodeInfo, Channel channel) {
+        public ClusterChannel(ClusterNodeConf clusterNodeInfo, Channel channel) {
             this.clusterNodeInfo = clusterNodeInfo;
             this.channel = channel;
         }
     }
 
     static class ClusterTypeNode {
-        INodeType nodeType;
-        ClusterNodeInfo minLoadNode;
-        Map<String, ClusterNodeInfo> clusterNodeMap = new ConcurrentHashMap<>();
+        IClusterNodeType nodeType;
+        ClusterNodeConf minLoadNode;
+        Map<String, ClusterNodeConf> clusterNodeMap = new ConcurrentHashMap<>();
 
-        public ClusterTypeNode(INodeType nodeType) {
+        public ClusterTypeNode(IClusterNodeType nodeType) {
             this.nodeType = nodeType;
         }
     }

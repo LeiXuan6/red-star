@@ -18,9 +18,38 @@ package com.inyourcode.cluster.api;
 /**
  * @author JackLei
  */
-public interface INodeType {
+public enum ClusterType implements IClusterNodeType {
+    LOBBY(1,"lobby"),
+    MATCH(2,"match"),
+    CHAT(3,"chat"),
+    WEB(4,"web"),
+    LOGIN(5,"login"),
+    FIGHT(6,"fight"),
+    COMMON(7,"chat"),
+    MAIL(8,"mail"),
+    FRIEND(9,"friend")
 
-    int getType();
 
-    String getName();
+
+
+    ;
+
+
+    private int type;
+    private String name;
+
+    ClusterType(int type, String name) {
+        this.type = type;
+        this.name = name;
+    }
+
+    @Override
+    public int getType() {
+        return 0;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
 }

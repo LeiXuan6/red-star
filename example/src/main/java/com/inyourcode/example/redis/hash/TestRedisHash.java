@@ -45,7 +45,7 @@ public class TestRedisHash {
 
         playerCollection.hset(playerDocument);
 
-        RedisTemplate redisTemplate = applicationContext.getBean(RedisTemplate.class);
+        RedisTemplate redisTemplate = applicationContext.getBean(RedisConfig.BYTES_REDIS_TEMPLATE, RedisTemplate.class);
         redisTemplate.opsForHash().putAll(playerCollection.key(), playerCollection.toBytes());
 
         PlayerCollection deserializeCollection = new PlayerCollection(1002);

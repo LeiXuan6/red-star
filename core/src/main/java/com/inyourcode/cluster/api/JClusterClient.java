@@ -23,8 +23,6 @@ import java.util.Set;
  */
 public interface JClusterClient {
 
-    void connectToClusterServer(String connectString);
-
     void shutdown();
 
     void reportNodeInfo();
@@ -32,8 +30,6 @@ public interface JClusterClient {
     void updateNodeInfo(int load, Map<String,String> extend);
 
     boolean sendMessageToCluster(Object data, Set<String> clusterNodeIds);
-
-    boolean sendMessageToCenter(Object data);
 
     boolean broadcastMessageToCluster(Object data);
 }

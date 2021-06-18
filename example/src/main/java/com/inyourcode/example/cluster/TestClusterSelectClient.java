@@ -15,7 +15,8 @@
  */
 package com.inyourcode.example.cluster;
 
-import com.inyourcode.cluster.ClusterNodeInfo;
+import com.inyourcode.cluster.ClusterNodeConf;
+import com.inyourcode.cluster.api.ClusterType;
 import com.inyourcode.cluster.provider.ClusterSelectProvider;
 import com.inyourcode.transport.api.UnresolvedAddress;
 import com.inyourcode.transport.netty.JNettyTcpConnector;
@@ -47,7 +48,7 @@ public class TestClusterSelectClient {
             while (true) {
                 try {
                     Thread.sleep(2 * 1000L);
-                    ClusterNodeInfo select = clusterSelectProvider.select(TestClusterType.LOBBY);
+                    ClusterNodeConf select = clusterSelectProvider.select(ClusterType.LOBBY);
                     System.out.println(select);
                 } catch (Exception e) {
                     e.printStackTrace();

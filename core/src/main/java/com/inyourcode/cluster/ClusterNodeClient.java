@@ -16,6 +16,8 @@
 package com.inyourcode.cluster;
 
 import com.inyourcode.cluster.api.ClusterForwardHandler;
+import com.inyourcode.cluster.api.ClusterMessageHandler;
+import com.inyourcode.cluster.api.IClusterNodeType;
 import com.inyourcode.cluster.api.JClusterClient;
 import com.inyourcode.common.util.JConstants;
 import com.inyourcode.common.util.JServiceLoader;
@@ -72,17 +74,16 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
     private final ConnectorIdleStateTrigger idleStateTrigger = new ConnectorIdleStateTrigger();
     private final MessageHandler handler = new MessageHandler();
     private final MessageEncoder encoder = new MessageEncoder();
-    private ClusterNodeInfo clusterNodeInfo;
     private ConnectionWatchdog watchdog;
-    private ClusterForwardHandler clusterForwardHandler;
+    private IClusterNodeType clusterNodeType;
+    private ClusterNodeConf conf;
+    private ClusterMessageHandler clusterMessageHandler;
 
-    public ClusterNodeClient(ClusterNodeInfo clusterNodeInfo, ClusterForwardHandler clusterForwardHandler) {
-        this.clusterNodeInfo = clusterNodeInfo;
-        this.clusterForwardHandler = clusterForwardHandler;
-    }
 
-    public ClusterNodeClient(ClusterNodeInfo clusterNodeInfo) {
-        this(clusterNodeInfo, ClusterForwardHandlerLoader.clusterForwardHandler);
+    public ClusterNodeClient(IClusterNodeType clusterNodeType, ClusterNodeConf conf) {
+        this.clusterNodeType = clusterNodeType;
+        this.conf = conf;
+        this.clusterMessageHandler = new DefaultClusterMessageHandler();
     }
 
     @Override
@@ -154,15 +155,6 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
         };
     }
 
-    @Override
-    public void connectToClusterServer(String connectString) {
-        checkNotNull(connectString, "connectString");
-        String[] addressStr = Strings.split(connectString, ':');
-        String host = addressStr[0];
-        int port = Integer.parseInt(addressStr[1]);
-        UnresolvedAddress address = new UnresolvedAddress(host, port);
-        connect(address, false);
-    }
 
     @Override
     public void shutdown() {
@@ -174,16 +166,16 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
         ClusterMessage msg = new ClusterMessage();
         msg.setSerializerCode(SerializerType.PROTO_STUFF.value());
         msg.setMessageCode(JProtocolHeader.CLUSTER_NODE_REGISTER);
-        msg.setSourceNodeId(clusterNodeInfo.getNodeId());
-        msg.setData(clusterNodeInfo);
+        msg.setSourceNodeId(conf.getNodeId());
+        msg.setData(conf);
         watchdog.channel().write(msg);
     }
 
     @Override
     public void updateNodeInfo(int load, Map<String, String> extend) {
-        clusterNodeInfo.setCurrentLoad(load);
+        conf.setCurrentLoad(load);
         if (!CollectionUtils.isEmpty(extend)) {
-            clusterNodeInfo.getExtend().putAll(extend);
+            conf.getExtend().putAll(extend);
         }
     }
 
@@ -198,7 +190,7 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
         msg.setTargetNodeIds(clusterNodeIds);
         msg.setSerializerCode(SerializerType.PROTO_STUFF.value());
         msg.setMessageCode(JProtocolHeader.CLUSTER_MESSAGE_TO_CLUSTER);
-        msg.setSourceNodeId(clusterNodeInfo.getNodeId());
+        msg.setSourceNodeId(conf.getNodeId());
         msg.setData(data);
 
         JChannel channel = watchdog.channel();
@@ -210,24 +202,24 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
         return true;
     }
 
-    @Override
-    public boolean sendMessageToCenter(Object data) {
-        checkNotNull(data);
-
-        ClusterMessage msg = new ClusterMessage();
-        msg.setSerializerCode(SerializerType.PROTO_STUFF.value());
-        msg.setMessageCode(JProtocolHeader.CLUSTER_MESSAGE_TO_CENTER);
-        msg.setSourceNodeId(clusterNodeInfo.getNodeId());
-        msg.setData(data);
-
-        JChannel channel = watchdog.channel();
-        if (channel == null) {
-            return false;
-        }
-
-        channel.write(msg);
-        return true;
-    }
+//    @Override
+//    public boolean connectToCluster(Object data) {
+//        checkNotNull(data);
+//
+//        ClusterMessage msg = new ClusterMessage();
+//        msg.setSerializerCode(SerializerType.PROTO_STUFF.value());
+//        msg.setMessageCode(JProtocolHeader.CLUSTER_MESSAGE_TO_CENTER);
+//        msg.setSourceNodeId(clusterNodeConf.getNodeId());
+//        msg.setData(data);
+//
+//        JChannel channel = watchdog.channel();
+//        if (channel == null) {
+//            return false;
+//        }
+//
+//        channel.write(msg);
+//        return true;
+//    }
 
     @Override
     public boolean broadcastMessageToCluster(Object data) {
@@ -236,7 +228,7 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
         msg.setSerializerCode(SerializerType.PROTO_STUFF.value());
         msg.setMessageCode(JProtocolHeader.CLUSTER_MESSAGE_TO_CLUSTER);
         msg.setData(data);
-        msg.setSourceNodeId(clusterNodeInfo.getNodeId());
+        msg.setSourceNodeId(conf.getNodeId());
 
         JChannel channel = watchdog.channel();
         if (channel == null) {
@@ -339,15 +331,17 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
                     ClusterMessage obj = (ClusterMessage) msg;
                     switch (obj.getMessageCode()) {
                         case JProtocolHeader.CLUSTER_MESSAGE_TO_CLUSTER: {
-                            clusterForwardHandler.handle(obj.getSourceNodeId(), obj.getData());
+                            clusterMessageHandler.handle(obj.getSourceNodeId(), obj.getData());
                             break;
+                        }
+                        default: {
+                            logger.warn("Unexpected msg header received: {}.", obj.getMessageCode());
                         }
                     }
                 } else {
                     logger.warn("Unexpected msg type received: {}.", msg.getClass());
                 }
             } finally {
-
                 ReferenceCountUtil.release(msg);
             }
         }

@@ -15,8 +15,8 @@
  */
 package com.inyourcode.cluster.provider;
 
-import com.inyourcode.cluster.ClusterNodeInfo;
-import com.inyourcode.cluster.api.INodeType;
+import com.inyourcode.cluster.ClusterNodeConf;
+import com.inyourcode.cluster.api.IClusterNodeType;
 import com.inyourcode.transport.rpc.ServiceProvider;
 
 /**
@@ -25,5 +25,5 @@ import com.inyourcode.transport.rpc.ServiceProvider;
 @ServiceProvider(group = "cluster")
 public interface ClusterSelectProvider {
 
-    ClusterNodeInfo select(INodeType type);
+    ClusterNodeConf select(IClusterNodeType type);
 }
