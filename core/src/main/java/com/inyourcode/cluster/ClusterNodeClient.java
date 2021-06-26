@@ -75,13 +75,11 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
     private final MessageHandler handler = new MessageHandler();
     private final MessageEncoder encoder = new MessageEncoder();
     private ConnectionWatchdog watchdog;
-    private IClusterNodeType clusterNodeType;
     private ClusterNodeConf conf;
     private ClusterMessageHandler clusterMessageHandler;
 
 
-    public ClusterNodeClient(IClusterNodeType clusterNodeType, ClusterNodeConf conf) {
-        this.clusterNodeType = clusterNodeType;
+    public ClusterNodeClient(ClusterNodeConf conf) {
         this.conf = conf;
         this.clusterMessageHandler = new DefaultClusterMessageHandler();
     }

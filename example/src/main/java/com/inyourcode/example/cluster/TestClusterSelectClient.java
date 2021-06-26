@@ -16,7 +16,7 @@
 package com.inyourcode.example.cluster;
 
 import com.inyourcode.cluster.ClusterNodeConf;
-import com.inyourcode.cluster.api.ClusterType;
+import com.inyourcode.cluster.ClusterType;
 import com.inyourcode.cluster.provider.ClusterSelectProvider;
 import com.inyourcode.transport.api.UnresolvedAddress;
 import com.inyourcode.transport.netty.JNettyTcpConnector;

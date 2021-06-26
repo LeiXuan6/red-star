@@ -128,12 +128,13 @@ public class RedisConfig {
     protected RedisConnectionFactory buildRedisFactory(String type) {
         RedisFactoryType factoryType = RedisFactoryType.getFactory(type);
         Preconditions.checkArgument(factoryType != null, "The redis factory type[" + type + "] not found");
+        String[] hostArray = null;
         switch (factoryType) {
             case SENTIENL:
                 RedisSentinelConfiguration sentinelConfig = new RedisSentinelConfiguration();
                 Preconditions.checkArgument(!StringUtils.isEmpty(sentinelHosts), "sentinel host config error.");
-                String[] hostArry = sentinelHosts.split(",");
-                for (String host : hostArry) {
+                hostArray = sentinelHosts.split(",");
+                for (String host : hostArray) {
                     String[] hostInfo = host.split(":");
                     Preconditions.checkArgument(hostInfo.length == 2, "sentinel host config error.");
                     sentinelConfig.sentinel(hostInfo[0], Integer.valueOf(hostInfo[1]));
@@ -143,7 +144,7 @@ public class RedisConfig {
                 return new JedisConnectionFactory(sentinelConfig);
             case STANDALONE:
                 Preconditions.checkArgument(!StringUtils.isEmpty(standaloneHost) , "standalone host config error.");
-                String[] hostArray = standaloneHost.split(":");
+                hostArray = standaloneHost.split(":");
                 Preconditions.checkArgument(hostArray.length == 2, "standalone host config error.");
                 RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(hostArray[0], Integer.parseInt(hostArray[1]));
                 config.setPassword(password);

@@ -13,43 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+package com.inyourcode.event.api;
 
 /**
+ *
  * @author JackLei
  */
-public enum ClusterType implements IClusterNodeType {
-    LOBBY(1,"lobby"),
-    MATCH(2,"match"),
-    CHAT(3,"chat"),
-    WEB(4,"web"),
-    LOGIN(5,"login"),
-    FIGHT(6,"fight"),
-    COMMON(7,"chat"),
-    MAIL(8,"mail"),
-    FRIEND(9,"friend")
+public interface IBeanEvent {
 
+    void before();
 
-
-
-    ;
-
-
-    private int type;
-    private String name;
-
-    ClusterType(int type, String name) {
-        this.type = type;
-        this.name = name;
-    }
-
-    @Override
-    public int getType() {
-        return 0;
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
+    void after();
 }

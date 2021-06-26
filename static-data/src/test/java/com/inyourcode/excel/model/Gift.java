@@ -6,7 +6,6 @@ import com.inyourcode.excel.serializer.JavaListSerializer;
 import com.inyourcode.excel.serializer.JavaExcelList;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.inyourcode.excel.serializer.JavaEnumSerializer;
-import com.alibaba.fastjson.JSONArray;;
 import com.inyourcode.excel.api.JavaExcelModel;
 
 /***

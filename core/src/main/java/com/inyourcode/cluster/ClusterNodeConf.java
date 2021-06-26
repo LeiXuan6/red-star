@@ -15,10 +15,12 @@
  */
 package com.inyourcode.cluster;
 
-import com.inyourcode.cluster.api.IClusterNodeType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author JackLei
@@ -28,12 +30,13 @@ public class ClusterNodeConf {
     private String uuid;
     private String nodeId;
     private String nodeName;
-    private IClusterNodeType nodeType;
+    private String nodeType;
+    private List<String> joinClustTypes = new ArrayList<>();
     private String clusterIp;
     private long reportTimeMillis;
     private int  currentLoad;
     private int maxLoad;
-    private long checkActiveTimeMillis;
+    private long lastActiveTimeMillis;
     private Map<String, String> extend = new HashMap<>();
 
     public void setGroupId(String groupId) {
@@ -48,7 +51,7 @@ public class ClusterNodeConf {
         this.nodeName = nodeName;
     }
 
-    public void setNodeType(IClusterNodeType nodeType) {
+    public void setNodeType(String nodeType) {
         this.nodeType = nodeType;
     }
 
@@ -88,7 +91,7 @@ public class ClusterNodeConf {
         return nodeName;
     }
 
-    public IClusterNodeType getNodeType() {
+    public String getNodeType() {
         return nodeType;
     }
 
@@ -112,28 +115,40 @@ public class ClusterNodeConf {
         return extend;
     }
 
-    public long getCheckActiveTimeMillis() {
-        return checkActiveTimeMillis;
+    public long getLastActiveTimeMillis() {
+        return lastActiveTimeMillis;
     }
 
-    public void setCheckActiveTimeMillis(long checkActiveTimeMillis) {
-        this.checkActiveTimeMillis = checkActiveTimeMillis;
+    public void setLastActiveTimeMillis(long lastActiveTimeMillis) {
+        this.lastActiveTimeMillis = lastActiveTimeMillis;
+    }
+
+    public List<String> getJoinClustTypes() {
+        return joinClustTypes;
+    }
+
+    public void setJoinClustTypes(List<String> joinClustTypes) {
+        this.joinClustTypes = joinClustTypes;
+    }
+
+    public void setExtend(Map<String, String> extend) {
+        this.extend = extend;
     }
 
     @Override
-    public String toString() {
-        return "ClusterNodeConf{" +
-                "groupId='" + groupId + '\'' +
-                ", uuid='" + uuid + '\'' +
-                ", nodeId='" + nodeId + '\'' +
-                ", nodeName='" + nodeName + '\'' +
-                ", nodeType=" + nodeType +
-                ", nodeIp='" + clusterIp + '\'' +
-                ", reportTimeMillis=" + reportTimeMillis +
-                ", currentLoad=" + currentLoad +
-                ", maxLoad=" + maxLoad +
-                ", checkTimeMillis=" + checkActiveTimeMillis +
-                ", extend=" + extend +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClusterNodeConf that = (ClusterNodeConf) o;
+        return Objects.equals(groupId, that.groupId) &&
+                Objects.equals(uuid, that.uuid) &&
+                Objects.equals(nodeId, that.nodeId) &&
+                Objects.equals(nodeName, that.nodeName) &&
+                Objects.equals(nodeType, that.nodeType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, uuid, nodeId, nodeName, nodeType);
     }
 }

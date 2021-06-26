@@ -52,6 +52,8 @@ import java.util.List;
 import static com.inyourcode.common.util.StackTraceUtil.stackTrace;
 
 /**
+ * 集群tcp服务.
+ * 每一个集群节点对应一个ClusterNodeServer，用来监听集群消息、保存集群节点的状态
  * @author JackLei
  */
 public class ClusterNodeServer extends NettyTcpAcceptor {

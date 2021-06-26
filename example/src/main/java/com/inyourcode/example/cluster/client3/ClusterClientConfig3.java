@@ -17,7 +17,7 @@ package com.inyourcode.example.cluster.client3;
 
 import com.inyourcode.cluster.ClusterNodeConf;
 import com.inyourcode.cluster.api.JClusterClient;
-import com.inyourcode.cluster.api.ClusterType;
+import com.inyourcode.cluster.ClusterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,7 +66,7 @@ public class ClusterClientConfig3 {
         clusterNodeInfo.setNodeName(nodeName);
         clusterNodeInfo.setClusterIp(ip);
         clusterNodeInfo.setMaxLoad(maxLoad);
-        clusterNodeInfo.setNodeType(ClusterType.LOBBY);
+        clusterNodeInfo.setNodeType(ClusterType.LOBBY.getName());
         clusterNodeInfo.setReportTimeMillis(System.currentTimeMillis());
         return clusterNodeInfo;
     }

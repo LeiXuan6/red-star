@@ -18,11 +18,11 @@ public class ClusterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterService.class);
     private static final long EXPIRE_TIME_MILLIS = 5 * 1000L;
     private static final ConcurrentHashMap<String, ClusterChannel> NODE_MAP = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<IClusterNodeType, ClusterTypeNode> NODE_TYPE_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, ClusterTypeNode> NODE_TYPE_MAP = new ConcurrentHashMap<>();
 
     protected static void registerClusterNode(Channel channel, ClusterNodeConf clusterNodeInfo) {
         String nodeId = clusterNodeInfo.getNodeId();
-        IClusterNodeType nodeType = clusterNodeInfo.getNodeType();
+        String nodeType = clusterNodeInfo.getNodeType();
 
         //缓存ClusterChannel
         ClusterChannel clusterChannel = NODE_MAP.get(nodeId);
@@ -89,7 +89,7 @@ public class ClusterService {
     private static void removeNode(String nodeId) {
         ClusterChannel remove = NODE_MAP.remove(nodeId);
         if (remove != null) {
-            IClusterNodeType nodeType = remove.clusterNodeInfo.getNodeType();
+            String nodeType = remove.clusterNodeInfo.getNodeType();
             String removeNodeId = remove.clusterNodeInfo.getNodeId();
             ClusterTypeNode clusterTypeNode = NODE_TYPE_MAP.get(nodeType);
             if (clusterTypeNode != null) {
@@ -165,11 +165,11 @@ public class ClusterService {
     }
 
     static class ClusterTypeNode {
-        IClusterNodeType nodeType;
+        String nodeType;
         ClusterNodeConf minLoadNode;
         Map<String, ClusterNodeConf> clusterNodeMap = new ConcurrentHashMap<>();
 
-        public ClusterTypeNode(IClusterNodeType nodeType) {
+        public ClusterTypeNode(String nodeType) {
             this.nodeType = nodeType;
         }
     }

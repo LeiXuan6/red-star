@@ -15,18 +15,19 @@
  */
 package com.inyourcode.cluster;
 
-import com.inyourcode.cluster.api.ClusterType;
-import com.inyourcode.cluster.api.JClusterClient;
+import com.inyourcode.common.util.Preconditions;
+import com.inyourcode.db.redis.RedisConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -37,7 +38,12 @@ import java.util.UUID;
 @PropertySource("classpath:cluster-client.properties")
 @EnableScheduling
 @ComponentScan(basePackages = "${app.scanpackages}")
+@Import(RedisConfig.class)
 public class ClusterNodeApp {
+    @Value("${cluster.node.join}")
+    private String joinType;
+    @Value("${cluster.node.type}")
+    private String nodeType;
     @Value("${cluster.group.id}")
     private String clusterGroupId;
     @Value("${cluster.node.id}")
@@ -48,9 +54,14 @@ public class ClusterNodeApp {
     private String clusterIp;
     @Value("${cluster.node.maxLoad}")
     private int maxLoad;
+    @Autowired
+    ClusterNodeManager clusterNodeManager;
 
     @Bean
     public ClusterNodeConf clusterNodeConf() {
+        ClusterType clusterType = ClusterType.getType(nodeType);
+        Preconditions.checkNotNull(clusterType, "cluster type not found, " + nodeType);
+
         ClusterNodeConf clusterNodeInfo = new ClusterNodeConf();
         clusterNodeInfo.setUuid(UUID.randomUUID().toString() + "_" + nodeId);
         clusterNodeInfo.setGroupId(clusterGroupId);
@@ -58,44 +69,30 @@ public class ClusterNodeApp {
         clusterNodeInfo.setNodeName(nodeName);
         clusterNodeInfo.setClusterIp(clusterIp);
         clusterNodeInfo.setMaxLoad(maxLoad);
-        clusterNodeInfo.setNodeType(ClusterType.LOBBY);
+        clusterNodeInfo.setNodeType(clusterType.getName());
+
+        String[] split = joinType.split(",");
+        for (String joinType : split) {
+            clusterNodeInfo.getJoinClustTypes().add(joinType);
+        }
         return clusterNodeInfo;
     }
 
     @Bean
-    ClusterNodeServer clusterNodeServer(ClusterNodeConf clusterNodeConf) {
-        ClusterNodeServer clusterNodeServer = new ClusterNodeServer(clusterNodeConf.get);
-        clusterNodeServer.bind()
+    ClusterNodeServer clusterNodeServer(ClusterNodeConf clusterNodeConf) throws InterruptedException {
+        String clusterIp = clusterNodeConf.getClusterIp();
+        String[] split = clusterIp.split(":");
+        int port = Integer.valueOf(split[1]);
+        ClusterNodeServer clusterNodeServer = new ClusterNodeServer(port);
+        clusterNodeServer.start(false);
+        return clusterNodeServer;
     }
 
-    @Bean
-    JClusterClient clusterClient(ClusterNodeConf clusterNodeConf) {
-        ClusterNodeClient clusterNodeClient = new ClusterNodeClient(ClusterType.LOBBY, clusterNodeConf);
-        return clusterNodeClient;
-    }
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public void tick() {
-        Random random = new Random();
-        int randomLoad = random.nextInt(1000);
-
+        clusterNodeManager.tick();
     }
-//
-//    @Scheduled(initialDelay = 6000, fixedRate = 2000)
-//    public void forwardMessage(){
-//        clusterClient.broadcastMessageToCluster("hello gays");
-//    }
-//
-//    @Scheduled(initialDelay = 7000, fixedRate = 4000)
-//    public void sendMessageToCenter(){
-//        clusterClient.connectToCluster("hello center");
-//    }
-//
-//    @Scheduled(initialDelay = 7000, fixedRate = 6000)
-//    public void sendMessageToCluster(){
-//        HashSet clusterNodeIdSet = new HashSet();
-//        clusterNodeIdSet.add("3");
-//        clusterClient.sendMessageToCluster("hello cluster[3]", clusterNodeIdSet);
-//    }
+
 }
 
