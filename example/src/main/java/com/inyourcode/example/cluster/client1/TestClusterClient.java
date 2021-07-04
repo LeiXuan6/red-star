@@ -15,7 +15,6 @@
  */
 package com.inyourcode.example.cluster.client1;
 
-import com.inyourcode.cluster.ClusterNodeApp;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**

@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster;
+package com.inyourcode.example.cluster.client3;
 
+import com.inyourcode.cluster.ClusterNodeConf;
+import com.inyourcode.cluster.ClusterNodeManager;
+import com.inyourcode.cluster.ClusterNodeServer;
+import com.inyourcode.cluster.ClusterType;
 import com.inyourcode.common.util.Preconditions;
 import com.inyourcode.db.redis.RedisConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +39,11 @@ import java.util.UUID;
  */
 @Configurable
 @Configuration
-@PropertySource("classpath:cluster-client.properties")
+@PropertySource("classpath:cluster-client3.properties")
 @EnableScheduling
 @ComponentScan(basePackages = "${app.scanpackages}")
 @Import(RedisConfig.class)
-public class ClusterNodeApp {
+public class ClusterNodeApp3 {
     @Value("${cluster.node.join}")
     private String joinType;
     @Value("${cluster.node.type}")

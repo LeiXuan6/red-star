@@ -23,7 +23,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class TestClusterClient3 {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext configApplicationContext = new AnnotationConfigApplicationContext();
-        configApplicationContext.register(ClusterClientConfig3.class);
+        configApplicationContext.register(ClusterNodeApp3.class);
         configApplicationContext.refresh();
     }
 }

@@ -61,7 +61,7 @@ public class ClusterNodeManager {
                 long checkTime = currentTimeMillis - nodeFromDB.getLastActiveTimeMillis();
                 if (checkTime > ClusterConst.CLUSTER_ACTIVE_TIME_MS) {
                     clusterNodeMap.remove(nodeId);
-                    redisTemplate.opsForHash().delete(nodeId);
+                    redisTemplate.opsForHash().delete(ClusterConst.KEY_CLUSTER_DATA, nodeId);
                     LOGGER.error("the node[{}] has lost connection.", nodeFromDB);
                 } else {
                     clusterNodeMap.put(nodeId, nodeFromDB);
@@ -76,30 +76,30 @@ public class ClusterNodeManager {
     private void connectToOtherClusterNode(){
         Collection<ClusterNodeConf> otherClusterNodes = clusterNodeMap.values();
         otherClusterNodes.forEach(otherClusterNode -> {
-            String nodeId = otherClusterNode.getNodeId();
-            String key = otherClusterNode.getNodeType() + "_" +nodeId;
-
-            ClusterConnector clusterConnector = clusterConnectorMap.get(key);
-            if (clusterConnector != null && clusterConnector.hasConnected) {
+            if (!currentClusterNodeConf.getJoinClustTypes().contains(otherClusterNode.getNodeType())) {
                 return;
             }
 
-            if (!clusterConnector.conf.getJoinClustTypes().contains(otherClusterNode.getNodeType())) {
+            String nodeId = otherClusterNode.getNodeId();
+            String key = otherClusterNode.getNodeType() + "_" +nodeId;
+
+            ClusterConnector clusterConnectorFromCache = clusterConnectorMap.get(key);
+            if (clusterConnectorFromCache != null && clusterConnectorFromCache.hasConnected) {
                 return;
             }
 
             ClusterNodeClient clusterNodeClient = new ClusterNodeClient(currentClusterNodeConf);
-            clusterConnector = new ClusterConnector();
-            clusterConnector.conf = otherClusterNode;
-            clusterConnector.hasConnected = true;
-            clusterConnector.clusterNodeClient = clusterNodeClient;
+            clusterConnectorFromCache = new ClusterConnector();
+            clusterConnectorFromCache.conf = otherClusterNode;
+            clusterConnectorFromCache.hasConnected = true;
+            clusterConnectorFromCache.clusterNodeClient = clusterNodeClient;
 
-            ClusterConnector putIfAbsent = clusterConnectorMap.putIfAbsent(key, clusterConnector);
+            ClusterConnector putIfAbsent = clusterConnectorMap.putIfAbsent(key, clusterConnectorFromCache);
             if (putIfAbsent != null) {
                 return;
             }
 
-            if (clusterConnector.conf.hashCode() < currentClusterNodeConf.hashCode()) {
+            if (clusterConnectorFromCache.conf.hashCode() < currentClusterNodeConf.hashCode()) {
                 return;
             }
 
