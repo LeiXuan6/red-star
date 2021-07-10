@@ -93,9 +93,6 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
         bootstrap().channelFactory(TcpChannelProvider.NIO_CONNECTOR);
     }
 
-    /**
-     * ConfigClient不支持异步连接行为, async参数无效
-     */
     @Override
     public JConnection connect(UnresolvedAddress address, boolean async) {
         setOptions();
@@ -135,7 +132,9 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
             }
 
             // 以下代码在synchronized同步块外面是安全的
-            future.sync();
+            if (!async) {
+                future.sync();
+            }
         } catch (Throwable t) {
             throw new ConnectFailedException("connects to [" + address + "] fails", t);
         }

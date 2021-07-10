@@ -98,5 +98,10 @@ public class ClusterNodeApp3 {
         clusterNodeManager.tick();
     }
 
+    @Scheduled(initialDelay = 5000, fixedRate = 5000)
+    public void tick45Sec() {
+        String displayClusterInfo = clusterNodeManager.displayClusterInfo();
+        System.out.println(displayClusterInfo);
+    }
 }
 

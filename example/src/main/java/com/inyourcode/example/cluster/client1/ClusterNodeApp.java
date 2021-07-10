@@ -37,12 +37,12 @@ import java.util.UUID;
 /**
  * @author JackLei
  */
-//@Configurable
-//@Configuration
-//@PropertySource("classpath:cluster-client.properties")
-//@EnableScheduling
-//@ComponentScan(basePackages = "${app.scanpackages}")
-//@Import(RedisConfig.class)
+@Configurable
+@Configuration
+@PropertySource("classpath:cluster-client.properties")
+@EnableScheduling
+@ComponentScan(basePackages = "${app.scanpackages}")
+@Import(RedisConfig.class)
 public class ClusterNodeApp {
     @Value("${cluster.node.join}")
     private String joinType;
@@ -96,6 +96,12 @@ public class ClusterNodeApp {
     @Scheduled(initialDelay = 5000, fixedRate = 1000)
     public void tick() {
         clusterNodeManager.tick();
+    }
+
+    @Scheduled(initialDelay = 5000, fixedRate = 5000)
+    public void tick45Sec() {
+        String displayClusterInfo = clusterNodeManager.displayClusterInfo();
+        System.out.println(displayClusterInfo);
     }
 
 }

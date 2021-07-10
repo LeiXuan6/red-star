@@ -62,7 +62,7 @@ public class ClusterNodeManager {
                 if (checkTime > ClusterConst.CLUSTER_ACTIVE_TIME_MS) {
                     clusterNodeMap.remove(nodeId);
                     redisTemplate.opsForHash().delete(ClusterConst.KEY_CLUSTER_DATA, nodeId);
-                    LOGGER.error("the node[{}] has lost connection.", nodeFromDB);
+                    LOGGER.error("Old node[{}] has lost connection.", nodeFromDB);
                 } else {
                     clusterNodeMap.put(nodeId, nodeFromDB);
                 }
@@ -71,6 +71,23 @@ public class ClusterNodeManager {
         }
 
         connectToOtherClusterNode();
+    }
+
+    public String displayClusterInfo() {
+        Collection<ClusterConnector> clusterConnectors = clusterConnectorMap.values();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("========================cluster info========================\n");
+        String colNodeId = String.format("%20s","nodeId");
+        String colClusterIp = String.format("|%20s","clusterIp");
+        stringBuilder.append(colNodeId).append(colClusterIp).append("\n");
+
+        for (ClusterConnector connector : clusterConnectors) {
+            stringBuilder.append(String.format("%20s|",connector.conf.getNodeId()));
+            stringBuilder.append(String.format("%20s", connector.conf.getClusterIp()));
+            stringBuilder.append("\n");
+        }
+        stringBuilder.append("=============================================================\n");
+        return stringBuilder.toString();
     }
 
     private void connectToOtherClusterNode(){
@@ -103,10 +120,11 @@ public class ClusterNodeManager {
                 return;
             }
 
-            String[] split = currentClusterNodeConf.getClusterIp().split(":");
+            String[] split = clusterConnectorFromCache.conf.getClusterIp().split(":");
             String host = split[0];
             int port = Integer.valueOf(split[1]);
             clusterNodeClient.connect(new UnresolvedAddress(host, port), true);
+            LOGGER.info("Attempts to connect to the cluster node:{}", clusterConnectorFromCache.conf);
         });
     }
 

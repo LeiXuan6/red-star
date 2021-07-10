@@ -151,4 +151,17 @@ public class ClusterNodeConf {
     public int hashCode() {
         return Objects.hash(groupId, uuid, nodeId, nodeName, nodeType);
     }
+
+    @Override
+    public String toString() {
+        return "ClusterNodeConf{" +
+                "groupId='" + groupId + '\'' +
+                ", uuid='" + uuid + '\'' +
+                ", nodeId='" + nodeId + '\'' +
+                ", nodeName='" + nodeName + '\'' +
+                ", nodeType='" + nodeType + '\'' +
+                ", joinClustTypes=" + joinClustTypes +
+                ", clusterIp='" + clusterIp + '\'' +
+                '}';
+    }
 }
