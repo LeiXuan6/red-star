@@ -60,6 +60,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter im
 
     private volatile int state;
     private int attempts;
+    private boolean autoReconnect = true;
 
     public ConnectionWatchdog(Bootstrap bootstrap, Timer timer, SocketAddress remoteAddress, JChannelGroup group) {
         this.bootstrap = bootstrap;
@@ -76,6 +77,10 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter im
 
     public void start() {
         state = ST_STARTED;
+    }
+
+    public void forbidAutoConnect() {
+        this.autoReconnect = false;
     }
 
     public void stop() {
@@ -99,7 +104,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter im
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         boolean doReconnect = isStarted() && (group == null || (group.size() < group.getCapacity()));
-        if (doReconnect) {
+        if (doReconnect && autoReconnect) {
             if (attempts < 12) {
                 attempts++;
             }

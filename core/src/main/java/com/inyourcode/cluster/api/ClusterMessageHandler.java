@@ -21,4 +21,5 @@ package com.inyourcode.cluster.api;
 public interface ClusterMessageHandler {
 
     void handle(String sourceNodeId, Object data);
+
 }

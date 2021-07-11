@@ -61,8 +61,10 @@ public class ClusterNodeManager {
                 long checkTime = currentTimeMillis - nodeFromDB.getLastActiveTimeMillis();
                 if (checkTime > ClusterConst.CLUSTER_ACTIVE_TIME_MS) {
                     clusterNodeMap.remove(nodeId);
+                    clusterConnectorMap.remove(genConnectorKey(nodeFromDB.getNodeType(), nodeId));
                     redisTemplate.opsForHash().delete(ClusterConst.KEY_CLUSTER_DATA, nodeId);
                     LOGGER.error("Old node[{}] has lost connection.", nodeFromDB);
+
                 } else {
                     clusterNodeMap.put(nodeId, nodeFromDB);
                 }
@@ -98,10 +100,14 @@ public class ClusterNodeManager {
             }
 
             String nodeId = otherClusterNode.getNodeId();
-            String key = otherClusterNode.getNodeType() + "_" +nodeId;
+            String key = genConnectorKey(otherClusterNode.getNodeType(), nodeId);
 
             ClusterConnector clusterConnectorFromCache = clusterConnectorMap.get(key);
             if (clusterConnectorFromCache != null && clusterConnectorFromCache.hasConnected) {
+                return;
+            }
+
+            if (otherClusterNode.hashCode() < currentClusterNodeConf.hashCode()) {
                 return;
             }
 
@@ -116,16 +122,16 @@ public class ClusterNodeManager {
                 return;
             }
 
-            if (clusterConnectorFromCache.conf.hashCode() < currentClusterNodeConf.hashCode()) {
-                return;
-            }
-
             String[] split = clusterConnectorFromCache.conf.getClusterIp().split(":");
             String host = split[0];
             int port = Integer.valueOf(split[1]);
             clusterNodeClient.connect(new UnresolvedAddress(host, port), true);
             LOGGER.info("Attempts to connect to the cluster node:{}", clusterConnectorFromCache.conf);
         });
+    }
+
+    private String genConnectorKey(String nodeType, String nodeId) {
+        return nodeType + "_" +nodeId;
     }
 
     static class ClusterConnector {
