@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.transport.rpc.balance;
 
 /**
- * @author JackLei
+ * jupiter
+ * load.balance
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public enum LoadBalancerType {
+    ROUND_ROBIN,    // 加权轮询
+    RANDOM;         // 加权随机
 
-    void handle(String sourceNodeId, Object data);
+    public static LoadBalancerType parse(String name) {
+        for (LoadBalancerType s : values()) {
+            if (s.name().equalsIgnoreCase(name)) {
+                return s;
+            }
+        }
+        return null;
+    }
 }

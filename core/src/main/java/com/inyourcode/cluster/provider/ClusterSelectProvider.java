@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+package com.inyourcode.cluster.provider;
+
+import com.inyourcode.cluster.ClusterNodeConf;
+import com.inyourcode.cluster.api.IClusterNodeType;
+import com.inyourcode.transport.rpc.ServiceProvider;
 
 /**
  * @author JackLei
  */
-public interface ClusterMessageHandler {
+@ServiceProvider(group = "cluster")
+public interface ClusterSelectProvider {
 
-    void handle(String sourceNodeId, Object data);
+    ClusterNodeConf select(IClusterNodeType type);
 }

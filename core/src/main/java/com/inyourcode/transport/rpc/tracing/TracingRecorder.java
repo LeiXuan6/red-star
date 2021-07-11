@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.transport.rpc.tracing;
 
 /**
- * @author JackLei
+ * An abstract view for performance.
+ *
+ * jupiter
+ * tracing
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public abstract class TracingRecorder {
 
-    void handle(String sourceNodeId, Object data);
+    public abstract void recording(Role role, Object... args);
+
+    public enum Role {
+        CONSUMER,
+        PROVIDER
+    }
 }

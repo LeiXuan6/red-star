@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.transport.rpc;
 
 /**
- * @author JackLei
+ * 请求派发方式, 支持单播以及广播.
+ *
+ * jupiter
+ * org.jupiter.rpc
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public enum DispatchType {
+    ROUND,      // 单播
+    BROADCAST;  // 广播
 
-    void handle(String sourceNodeId, Object data);
+    public static DispatchType parse(String name) {
+        for (DispatchType s : values()) {
+            if (s.name().equalsIgnoreCase(name)) {
+                return s;
+            }
+        }
+        return null;
+    }
 }

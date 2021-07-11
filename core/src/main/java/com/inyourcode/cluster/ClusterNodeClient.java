@@ -17,10 +17,12 @@ package com.inyourcode.cluster;
 
 import com.inyourcode.cluster.api.ClusterForwardHandler;
 import com.inyourcode.cluster.api.ClusterMessageHandler;
+import com.inyourcode.cluster.api.IClusterNodeType;
 import com.inyourcode.cluster.api.JClusterClient;
 import com.inyourcode.common.util.JConstants;
 import com.inyourcode.common.util.JServiceLoader;
 import com.inyourcode.common.util.Signal;
+import com.inyourcode.common.util.Strings;
 import com.inyourcode.serialization.api.Serializer;
 import com.inyourcode.serialization.api.SerializerFactory;
 import com.inyourcode.serialization.api.SerializerType;
@@ -31,7 +33,6 @@ import com.inyourcode.transport.api.UnresolvedAddress;
 import com.inyourcode.transport.api.channel.JChannel;
 import com.inyourcode.transport.api.exception.ConnectFailedException;
 import com.inyourcode.transport.api.exception.IoSignals;
-import com.inyourcode.transport.netty.NettyConnector;
 import com.inyourcode.transport.netty.NettyTcpConnector;
 import com.inyourcode.transport.netty.TcpChannelProvider;
 import com.inyourcode.transport.netty.channel.NettyChannel;
@@ -39,6 +40,7 @@ import com.inyourcode.transport.netty.channel.NettyChannelGroup;
 import com.inyourcode.transport.netty.handler.IdleStateChecker;
 import com.inyourcode.transport.netty.handler.connector.ConnectionWatchdog;
 import com.inyourcode.transport.netty.handler.connector.ConnectorIdleStateTrigger;
+import com.inyourcode.transport.registry.DefaultRegistry;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -68,6 +70,7 @@ import static com.inyourcode.common.util.StackTraceUtil.stackTrace;
  * @author JackLei
  */
 public class ClusterNodeClient extends NettyTcpConnector implements JClusterClient {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultRegistry.class);
     private final ConnectorIdleStateTrigger idleStateTrigger = new ConnectorIdleStateTrigger();
     private final MessageHandler handler = new MessageHandler();
     private final MessageEncoder encoder = new MessageEncoder();
@@ -112,7 +115,6 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
                 };
             }
         };
-        watchdog.forbidAutoConnect();
         watchdog.start();
 
         try {
@@ -317,7 +319,7 @@ public class ClusterNodeClient extends NettyTcpConnector implements JClusterClie
 
     @ChannelHandler.Sharable
     class MessageHandler extends ChannelInboundHandlerAdapter {
-        private  final Logger logger = LoggerFactory.getLogger(NettyConnector.class);
+
         @SuppressWarnings("unchecked")
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

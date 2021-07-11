@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.example.transport.rpc;
+
+
+import com.inyourcode.transport.registry.api.RegistryServer;
 
 /**
- * @author JackLei
+ * jupiter
+ * org.jupiter.example.round
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public class JupiterRegistryServer {
 
-    void handle(String sourceNodeId, Object data);
+    public static void main(String[] args) {
+        RegistryServer registryServer = RegistryServer.Default.createRegistryServer(20001, 1);      // 注册中心
+        registryServer.startRegistryServer();
+    }
 }

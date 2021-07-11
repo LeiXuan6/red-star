@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2016 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.transport.rpc.consumer.invoker;
 
 /**
- * @author JackLei
+ * 简单的理解, 泛化调用就是不依赖二方包, 通过传入方法名, 方法参数值, 就可以调用服务.
+ *
+ * jupiter
+ * consumer.invoker
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public interface GenericInvoker {
 
-    void handle(String sourceNodeId, Object data);
+    Object $invoke(String methodName, Object... args) throws Throwable;
 }

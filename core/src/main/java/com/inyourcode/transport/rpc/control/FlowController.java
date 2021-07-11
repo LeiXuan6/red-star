@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.transport.rpc.control;
 
 /**
- * @author JackLei
+ * 服务限流, 限流规则在服务端执行, 这可能会有一点点性能开销.
+ *
+ * 1. 每个 {@link com.inyourcode.transport.rpc.JServer} 都可设置一个App级别的全局限流器;
+ * 2. 每个Provide也可以设置更细粒度的Provider级别限流器.
+ *
+ * jupiter
+ * flow.control
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public interface FlowController<T> {
 
-    void handle(String sourceNodeId, Object data);
+    ControlResult flowControl(T t);
 }

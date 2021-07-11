@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.transport.rpc.provider;
+
+
+import com.inyourcode.transport.api.Directory;
+import com.inyourcode.transport.rpc.metadata.ServiceWrapper;
 
 /**
- * @author JackLei
+ * Lookup the service.
+ *
+ * jupiter
+ * provider
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public interface LookupService {
 
-    void handle(String sourceNodeId, Object data);
+    /**
+     * Lookup the service by {@link Directory}.
+     */
+    ServiceWrapper lookupService(Directory directory);
 }

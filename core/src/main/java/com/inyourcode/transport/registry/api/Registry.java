@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The red-star Project
+ * Copyright (c) 2015 The Jupiter Project
  *
  * Licensed under the Apache License, version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.inyourcode.cluster.api;
+
+package com.inyourcode.transport.registry.api;
 
 /**
- * @author JackLei
+ * jupiter
+ * org.jupiter.registry
+ *
+ * @author jiachun.fjc
  */
-public interface ClusterMessageHandler {
+public interface Registry {
 
-    void handle(String sourceNodeId, Object data);
+    /**
+     * Establish connections with registry server.
+     *
+     * 连接注册中心, 可连接多个地址.
+     *
+     * @param connectString list of servers to connect to [host1:port1,host2:port2....]
+     */
+    void connectToRegistryServer(String connectString);
 }
