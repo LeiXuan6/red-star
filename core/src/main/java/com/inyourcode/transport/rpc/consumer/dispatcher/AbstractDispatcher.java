@@ -148,9 +148,7 @@ abstract class AbstractDispatcher implements Dispatcher {
             }
         } else {
             // for 3 seconds, expired not wait
-            if (!client.awaitConnections(_metadata, 3000)) {
-                throw new IllegalStateException("no connections");
-            }
+
         }
 
         JChannelGroup[] snapshot = groups.snapshot();

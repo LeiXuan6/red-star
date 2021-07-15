@@ -19,7 +19,6 @@ package com.inyourcode.transport.rpc;
 
 import com.inyourcode.transport.api.Directory;
 import com.inyourcode.transport.api.JAcceptor;
-import com.inyourcode.transport.registry.api.Registry;
 import com.inyourcode.transport.rpc.control.FlowController;
 import com.inyourcode.transport.rpc.metadata.ServiceWrapper;
 import com.inyourcode.transport.rpc.provider.ProviderInterceptor;
@@ -35,7 +34,7 @@ import java.util.concurrent.Executor;
  *
  * @author jiachun.fjc
  */
-public interface JServer extends Registry {
+public interface JServer {
 
     /**
      * Service registry.
@@ -126,52 +125,6 @@ public interface JServer extends Registry {
      */
     List<ServiceWrapper> allRegisteredServices();
 
-    /**
-     * Publish a service.
-     *
-     * @param serviceWrapper service provider wrapper, created by {@link ServiceRegistry}
-     */
-    void publish(ServiceWrapper serviceWrapper);
-
-    /**
-     * Publish services.
-     *
-     * @param serviceWrappers service provider wrapper, created by {@link ServiceRegistry}
-     */
-    void publish(ServiceWrapper... serviceWrappers);
-
-    /**
-     * When initialization is complete, then publish the service.
-     *
-     * @param serviceWrapper    service provider wrapper, created by {@link ServiceRegistry}
-     * @param initializer       provider initializer
-     */
-    <T> void publishWithInitializer(ServiceWrapper serviceWrapper, ProviderInitializer<T> initializer);
-
-    /**
-     * When initialization is complete, then publish the service.
-     *
-     * @param serviceWrapper    service provider wrapper, created by {@link ServiceRegistry}
-     * @param initializer       provider initializer
-     * @param executor          executor for initializer
-     */
-    <T> void publishWithInitializer(ServiceWrapper serviceWrapper, ProviderInitializer<T> initializer, Executor executor);
-
-    /**
-     * Publish all services.
-     */
-    void publishAll();
-
-    /**
-     * Unpublish a service.
-     * @param serviceWrapper service provider wrapper, created by {@link ServiceRegistry}
-     */
-    void unpublish(ServiceWrapper serviceWrapper);
-
-    /**
-     * Unpublish all services.
-     */
-    void unpublishAll();
 
     /**
      * Start the server.

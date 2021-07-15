@@ -40,7 +40,6 @@ import com.inyourcode.transport.netty.channel.NettyChannelGroup;
 import com.inyourcode.transport.netty.handler.IdleStateChecker;
 import com.inyourcode.transport.netty.handler.connector.ConnectionWatchdog;
 import com.inyourcode.transport.netty.handler.connector.ConnectorIdleStateTrigger;
-import com.inyourcode.transport.registry.DefaultRegistry;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -70,7 +69,7 @@ import static com.inyourcode.common.util.StackTraceUtil.stackTrace;
  * @author JackLei
  */
 public class ClusterNodeClient extends NettyTcpConnector implements JClusterClient {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClusterNodeClient.class);
     private final ConnectorIdleStateTrigger idleStateTrigger = new ConnectorIdleStateTrigger();
     private final MessageHandler handler = new MessageHandler();
     private final MessageEncoder encoder = new MessageEncoder();

@@ -23,8 +23,6 @@ import com.inyourcode.common.util.NamedThreadFactory;
 import com.inyourcode.common.util.Strings;
 import com.inyourcode.transport.api.Directory;
 import com.inyourcode.transport.api.JAcceptor;
-import com.inyourcode.transport.registry.api.RegisterMeta;
-import com.inyourcode.transport.registry.api.RegistryService;
 import com.inyourcode.transport.rpc.control.FlowController;
 import com.inyourcode.transport.rpc.metadata.ServiceMetadata;
 import com.inyourcode.transport.rpc.metadata.ServiceWrapper;
@@ -71,8 +69,6 @@ public class DefaultServer implements JServer {
 
     // provider本地容器
     private final ServiceProviderContainer providerContainer = new DefaultServiceProviderContainer();
-    // 服务发布(SPI)
-    private final RegistryService registryService = JServiceLoader.loadFirst(RegistryService.class);
 
     // 全局拦截器
     private ProviderInterceptor[] globalInterceptors;
@@ -91,11 +87,6 @@ public class DefaultServer implements JServer {
         acceptor.withProcessor(new DefaultProviderProcessor(this));
         this.acceptor = acceptor;
         return this;
-    }
-
-    @Override
-    public void connectToRegistryServer(String connectString) {
-        registryService.connectToRegistryServer(connectString);
     }
 
     @Override
@@ -134,85 +125,6 @@ public class DefaultServer implements JServer {
     }
 
     @Override
-    public void publish(ServiceWrapper serviceWrapper) {
-        ServiceMetadata metadata = serviceWrapper.getMetadata();
-
-        RegisterMeta meta = new RegisterMeta();
-        meta.setPort(acceptor.boundPort());
-        meta.setGroup(metadata.getGroup());
-        meta.setServiceProviderName(metadata.getServiceProviderName());
-        meta.setVersion(metadata.getVersion());
-        meta.setWeight(serviceWrapper.getWeight());
-        meta.setConnCount(serviceWrapper.getConnCount());
-
-        registryService.register(meta);
-    }
-
-    @Override
-    public void publish(ServiceWrapper... serviceWrappers) {
-        for (ServiceWrapper wrapper : serviceWrappers) {
-            publish(wrapper);
-        }
-    }
-
-    @Override
-    public <T> void publishWithInitializer(ServiceWrapper serviceWrapper, ProviderInitializer<T> initializer) {
-        publishWithInitializer(serviceWrapper, initializer, null);
-    }
-
-    @Override
-    public <T> void publishWithInitializer(
-            final ServiceWrapper serviceWrapper, final ProviderInitializer<T> initializer, Executor executor) {
-        Runnable task = new Runnable() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void run() {
-                try {
-                    initializer.init((T) serviceWrapper.getServiceProvider());
-                    publish(serviceWrapper);
-                } catch (Exception e) {
-                    logger.error("Error on {} #publishWithInitializer: {}.", serviceWrapper.getMetadata(), stackTrace(e));
-                }
-            }
-        };
-        if (executor == null) {
-            defaultInitializerExecutor.execute(task);
-        } else {
-            executor.execute(task);
-        }
-    }
-
-    @Override
-    public void publishAll() {
-        for (ServiceWrapper wrapper : providerContainer.getAllServices()) {
-            publish(wrapper);
-        }
-    }
-
-    @Override
-    public void unpublish(ServiceWrapper serviceWrapper) {
-        ServiceMetadata metadata = serviceWrapper.getMetadata();
-
-        RegisterMeta meta = new RegisterMeta();
-        meta.setPort(acceptor.boundPort());
-        meta.setGroup(metadata.getGroup());
-        meta.setVersion(metadata.getVersion());
-        meta.setServiceProviderName(metadata.getServiceProviderName());
-        meta.setWeight(serviceWrapper.getWeight());
-        meta.setConnCount(serviceWrapper.getConnCount());
-
-        registryService.unregister(meta);
-    }
-
-    @Override
-    public void unpublishAll() {
-        for (ServiceWrapper wrapper : providerContainer.getAllServices()) {
-            unpublish(wrapper);
-        }
-    }
-
-    @Override
     public void start() throws InterruptedException {
         acceptor.start();
     }
@@ -224,7 +136,6 @@ public class DefaultServer implements JServer {
 
     @Override
     public void shutdownGracefully() {
-        registryService.shutdownGracefully();
         acceptor.shutdownGracefully();
     }
 

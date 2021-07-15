@@ -20,13 +20,6 @@ package com.inyourcode.transport.rpc;
 import com.inyourcode.transport.api.Directory;
 import com.inyourcode.transport.api.JConnection;
 import com.inyourcode.transport.api.JConnector;
-import com.inyourcode.transport.api.UnresolvedAddress;
-import com.inyourcode.transport.registry.api.NotifyListener;
-import com.inyourcode.transport.registry.api.OfflineListener;
-import com.inyourcode.transport.registry.api.RegisterMeta;
-import com.inyourcode.transport.registry.api.Registry;
-
-import java.util.Collection;
 
 /**
  * The jupiter rpc client.
@@ -36,7 +29,7 @@ import java.util.Collection;
  *
  * @author jiachun.fjc
  */
-public interface JClient extends Registry {
+public interface JClient{
 
     /**
      * Everyone should got a app name.
@@ -52,42 +45,6 @@ public interface JClient extends Registry {
      * Sets the connector.
      */
     JClient withConnector(JConnector<JConnection> connector);
-
-    /**
-     * Find a service in the local scope.
-     */
-    Collection<RegisterMeta> lookup(Directory directory);
-
-    /**
-     * Sets auto manage the connections.
-     */
-    JConnector.ConnectionWatcher watchConnections(Class<?> interfaceClass);
-
-    /**
-     * Sets auto manage the connections.
-     */
-    JConnector.ConnectionWatcher watchConnections(Class<?> interfaceClass, String version);
-
-    /**
-     * Sets auto manage the connections.
-     */
-    JConnector.ConnectionWatcher watchConnections(Directory directory);
-
-    /**
-     * Wait until the connections is available or timeout,
-     * if available return true, otherwise return false.
-     */
-    boolean awaitConnections(Directory directory, long timeoutMillis);
-
-    /**
-     * Subscribe a service from registry server.
-     */
-    void subscribe(Directory directory, NotifyListener listener);
-
-    /**
-     * Provider offline notification.
-     */
-    void offlineListening(UnresolvedAddress address, OfflineListener listener);
 
     /**
      * Shutdown.
